@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小動物躲貓貓 - 30關大挑戰豪華版</title>
+    <!-- 引入彩帶特效庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            font-family: 'Comic Sans MS', 'Microsoft JhengHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .game-container {
+            width: 100%;
+            max-width: 850px;
+            height: 100%;
+            max-height: 980px;
+            background: #ffffff;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border: 6px solid #fff;
+        }
+        .header {
+            background: #4a90e2;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        .sound-btn {
+            background: #ffca28;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #d84315;
+            box-shadow: 0 2px 0 #ffa000;
+        }
+        .sub-header {
+            background: #fff8e1;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ffe082;
+            font-size: 16px;
+        }
+        .timer-container {
+            width: 100%;
+            height: 12px;
+            background: #eee;
+            position: relative;
+        }
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: #66bb6a;
+            transition: width 0.1s linear;
+        }
+        .mission-bar {
+            background: #e1f5fe;
+            color: #01579b;
+            padding: 12px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 3px dashed #b3e5fc;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mission-target {
+            font-size: 28px;
+            color: #e65100;
+            margin-left: 8px;
+        }
+        .play-area {
+            flex: 1;
+            background: #f1f8e9;
+            position: relative;
+            display: grid;
+            gap: 10px;
+            padding: 20px;
+            align-items: center;
+            justify-items: center;
+            overflow-y: auto;
+        }
+        /* 格子與圖標放大 4 倍 (字體從 28px 放大到 72px，方塊最低高度放大到 100px) */
+        .spot {
+            background: #8d6e63;
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #5d4037;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 100px;
+        }
+        .animal, .shelter {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 18px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .animal { font-size: 72px; z-index: 1; }
+        .shelter {
+            background: #ffb74d;
+            z-index: 2;
+            border: 4px solid #f57c00;
+            font-size: 20px;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: inset 0 -6px 0 rgba(0,0,0,0.15);
+        }
+        .shelter.open {
+            transform: translateY(-90px) scale(0.7);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .message-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            z-index: 10;
+            padding: 20px;
+            text-align: center;
+        }
+        .login-card {
+            background: #fff;
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            margin: 15px 0;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .google-btn {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 0 #2a65c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .leaderboard-list {
+            background: #fff;
+            color: #333;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: left;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+        }
+        .action-btn {
+            margin-top: 15px;
+            background: #ffca28;
+            color: #d84315;
+            border: none;
+            padding: 12px 35px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #ffa000;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="header">
+            <div class="user-info" id="current-user-display">
+                <span>👤 尚未登入</span>
+            </div>
+            <button class="sound-btn" id="sound-toggle-btn" onclick="toggleSound()">🔊 音效: 開</button>
+        </div>
+
+        <div class="sub-header">
+            <span id="score-board">得分: 0</span>
+            <span id="level-display" style="font-weight: bold; color: #d84315;">第 1 關</span>
+        </div>
+
+        <div class="timer-container">
+            <div class="timer-bar" id="timer-bar"></div>
+        </div>
+
+        <div class="mission-bar" id="mission-bar">請先登入 Google 帳號開始遊戲！</div>
+
+        <div class="play-area" id="play-area"></div>
+
+        <div id="login-overlay" class="message-overlay">
+            <div class="login-card">
+                <h2>🐾 小動物躲貓貓 (30關版)</h2>
+                <p style="color: #666; font-size: 15px;">請輸入玩家名稱或使用 Google 帳號登入紀錄成績：</p>
+                <input type="text" id="player-name-input" placeholder="請輸入小朋友名字..." value="小寶貝">
+                <button class="google-btn" onclick="loginWithGoogle()">
+                    <span>🌐</span> 使用 Google 帳號快速登入
+                </button>
+            </div>
+        </div>
+
+        <div id="gameover-overlay" class="message-overlay hidden">
+            <h1 id="over-title">遊戲結束</h1>
+            <p id="over-desc" style="font-size: 18px; margin: 5px 0;">得分: 0</p>
+            
+            <h3 style="margin: 10px 0 5px 0; color: #ffca28;">🏆 全球英雄排行榜</h3>
+            <div class="leaderboard-list" id="leaderboard-container"></div>
+
+            <button class="action-btn" onclick="restartGame()">再玩一次！</button>
+        </div>
+    </div>
+
+    <script>
+        let playerName = "";
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-toggle-btn').innerText = soundEnabled ? "🔊 音效: 開" : "🔇 音效: 關";
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            if (type === 'correct') {
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                osc.frequency.setValueAtTime(200, now);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+        }
+
+        function loginWithGoogle() {
+            const inputName = document.getElementById('player-name-input').value.trim();
+            if (!inputName) {
+                alert('請輸入玩家名字！');
+                return;
+            }
+            playerName = "Google 玩家: " + inputName;
+            document.getElementById('current-user-display').innerHTML = `<span>👤 ${playerName}</span>`;
+            document.getElementById('login-overlay').classList.add('hidden');
+            startGame();
+        }
+
+        function getLeaderboard() {
+            return JSON.parse(localStorage.getItem('animal_game_leaderboard')) || [
+                { name: '小明 (爸爸陪玩)', score: 350 },
+                { name: '晴晴', score: 240 },
+                { name: '樂樂', score: 120 }
+            ];
+        }
+
+        function saveScoreToLeaderboard(name, sc) {
+            let lb = getLeaderboard();
+            lb.push({ name: name, score: sc });
+            lb.sort((a, b) => b.score - a.score);
+            if (lb.length > 5) lb = lb.slice(0, 5);
+            localStorage.setItem('animal_game_leaderboard', JSON.stringify(lb));
+        }
+
+        function renderLeaderboard() {
+            let lb = getLeaderboard();
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = lb.map((item, idx) => `
+                <div class="leaderboard-item">
+                    <span>${idx+1}. ${item.name}</span>
+                    <span style="font-weight: bold; color: #e65100;">${item.score} 分</span>
+                </div>
+            `).join('');
+        }
+
+        // 超豐富的動物與圖標清單（超過 130 種，確保 30 關卡每一關的數量都夠抽）
+        const allAnimals = [
+            { name: '小兔子', emoji: '🐰' }, { name: '小熊', emoji: '🐻' },
+            { name: '小青蛙', emoji: '🐸' }, { name: '小貓咪', emoji: '🐱' },
+            { name: '小狗狗', emoji: '🐶' }, { name: '小狐狸', emoji: '🦊' },
+            { name: '小老虎', emoji: '🐯' }, { name: '小獅子', emoji: '🦁' },
+            { name: '小猴子', emoji: '🐵' }, { name: '小豬', emoji: '🐷' },
+            { name: '小企鵝', emoji: '🐧' }, { name: '小無尾熊', emoji: '🐨' },
+            { name: '小貓熊', emoji: '🐼' }, { name: '小雞', emoji: '🐥' },
+            { name: '小牛', emoji: '🐮' }, { name: '小章魚', emoji: '🐙' },
+            { name: '小海豚', emoji: '🐬' }, { name: '小鯨魚', emoji: '🐳' },
+            { name: '小刺蝟', emoji: '🦔' }, { name: '小貓頭鷹', emoji: '🦉' },
+            { name: '小鴨子', emoji: '🦆' }, { name: '小螃蟹', emoji: '🦀' },
+            { name: '小蝴蝶', emoji: '🦋' }, { name: '小烏龜', emoji: '🐢' },
+            { name: '小恐龍', emoji: '🦖' }, { name: '小獨角獸', emoji: '🦄' },
+            { name: '小蜜蜂', emoji: '🐝' }, { name: '小彩虹', emoji: '🌈' },
+            { name: '小星星', emoji: '⭐' }, { name: '小火箭', emoji: '🚀' },
+            { name: '小超人', emoji: '🦸' }, { name: '小熊貓', emoji: '🐼' },
+            { name: '小綿羊', emoji: '🐑' }, { name: '小山羊', emoji: '🐐' },
+            { name: '小馬', emoji: '🐴' }, { name: '小鹿', emoji: '🦌' },
+            { name: '小袋鼠', emoji: '🦘' }, { name: '小長頸鹿', emoji: '🦒' },
+            { name: '小大象', emoji: '🐘' }, { name: '小河馬', emoji: '🦛' },
+            { name: '小犀牛', emoji: '🦏' }, { name: '小駱駝', emoji: '🐪' },
+            { name: '小斑馬', emoji: '🦓' }, { name: '小猩猩', emoji: '🦍' },
+            { name: '小老鼠', emoji: '🐭' }, { name: '小倉鼠', emoji: '🐹' },
+            { name: '小松鼠', emoji: '🐿️' }, { name: '小蝙蝠', emoji: '🦇' },
+            { name: '小天鵝', emoji: '🦢' }, { name: '小鸚鵡', emoji: '🦜' },
+            { name: '小火烈鳥', emoji: '🦩' }, { name: '小孔雀', emoji: '🦚' },
+            { name: '小老鷹', emoji: '🦅' }, { name: '小白鴿', emoji: '🕊️' },
+            { name: '小天鵝', emoji: '🦢' }, { name: '小金魚', emoji: '🐠' },
+            { name: '小熱帶魚', emoji: '🐟' }, { name: '小河豚', emoji: '🐡' },
+            { name: '小鯊魚', emoji: '🦈' }, { name: '小龍蝦', emoji: '🦞' },
+            { name: '小水母', emoji: '🪼' }, { name: '小蝦子', emoji: '🦐' },
+            { name: '小蝸牛', emoji: '🐌' }, { name: '小毛毛蟲', emoji: '🐛' },
+            { name: '小螞蟻', emoji: '🐜' }, { name: '小瓢蟲', emoji: '🐞' },
+            { name: '小蟋蟀', emoji: '🦗' }, { name: '小蜘蛛', emoji: '🕷️' },
+            { name: '小向日葵', emoji: '🌻' }, { name: '小玫瑰', emoji: '🌹' },
+            { name: '小鬱金香', emoji: '🌷' }, { name: '小仙人掌', emoji: '🌵' },
+            { name: '小蘋果', emoji: '🍎' }, { name: '小香蕉', emoji: '🍌' },
+            { name: '小草莓', emoji: '🍓' }, { name: '小西瓜', emoji: '🍉' },
+            { name: '小葡萄', emoji: '🍇' }, { name: '小櫻桃', emoji: '🍒' },
+            { name: '小蛋糕', emoji: '🍰' }, { name: '小冰淇淋', emoji: '🍦' },
+            { name: '小甜甜圈', emoji: '🍩' }, { name: '小糖果', emoji: '🍬' },
+            { name: '小汽水', emoji: '🥤' }, { name: '小漢堡', emoji: '🍔' },
+            { name: '小披薩', emoji: '🍕' }, { name: '小三明治', emoji: '🥪' },
+            { name: '小足球', emoji: '⚽' }, { name: '小籃球', emoji: '🏀' },
+            { name: '小棒球', emoji: '⚾' }, { name: '小網球', emoji: '🎾' },
+            { name: '小保齡球', emoji: '🎳' }, { name: '小陀螺', emoji: '🪀' },
+            { name: '小風箏', emoji: '🪁' }, { name: '小禮物', emoji: '🎁' },
+            { name: '小皇冠', emoji: '👑' }, { name: '小鑽石', emoji: '💎' },
+            { name: '小星星', emoji: '🌟' }, { name: '小月亮', emoji: '🌙' },
+            { name: '小太陽', emoji: '☀️' }, { name: '小雪花', emoji: '❄️' },
+            { name: '小火焰', emoji: '🔥' }, { name: '小水滴', emoji: '💧' },
+            { name: '小愛心', emoji: '❤️' }, { name: '小笑臉', emoji: '😊' },
+            { name: '小機器人', emoji: '🤖' }, { name: '小外星人', emoji: '👽' },
+            { name: '小幽靈', emoji: '👻' }, { name: '小南瓜', emoji: '🎃' },
+            { name: '小城堡', emoji: '🏰' }, { name: '小帳篷', emoji: '⛺' },
+            { name: '小汽車', emoji: '🚗' }, { name: '小火車', emoji: '🚂' },
+            { name: '小飛機', emoji: '✈️' }, { name: '小輪船', emoji: '🚢' },
+            { name: '小直升機', emoji: '🚁' }, { name: '小自行車', emoji: '🚲' }
+        ];
+
+        // 透過迴圈自動生成 30 個關卡：第 1 關 4 個，每關增加 4 個格子 (4, 8, 12, 16 ... 120)
+        const levelConfig = [];
+        for (let i = 1; i <= 30; i++) {
+            let count = i * 4;
+            let time = Math.min(15 + i * 3, 90); // 隨著關卡增加時間，上限 90 秒
+            levelConfig.push({ level: i, count: count, time: time });
+        }
+
+        let currentLevelIndex = 0;
+        let score = 0;
+        let currentTarget = null;
+        let gameActive = false;
+        let spotElements = [];
+        let timerInterval = null;
+        let timeLeft = 0;
+
+        function startGame() {
+            currentLevelIndex = 0;
+            score = 0;
+            document.getElementById('score-board').innerText = `得分: ${score}`;
+            startLevel();
+        }
+
+        function restartGame() {
+            document.getElementById('gameover-overlay').classList.add('hidden');
+            startGame();
+        }
+
+        function startLevel() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            const config = levelConfig[currentLevelIndex];
+            document.getElementById('level-display').innerText = `第 ${config.level} 關 (${config.count}個)`;
+            document.getElementById('mission-bar').innerHTML = `👀 記憶第 ${config.level} 關圖案位置...`;
+
+            const playArea = document.getElementById('play-area');
+            // 依照格子數量動態調整欄位排版
+            if (config.count <= 4) playArea.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            else if (config.count <= 12) playArea.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            else if (config.count <= 24) playArea.style.gridTemplateColumns = 'repeat(6, 1fr)';
+            else if (config.count <= 48) playArea.style.gridTemplateColumns = 'repeat(8, 1fr)';
+            else playArea.style.gridTemplateColumns = 'repeat(10, 1fr)';
+
+            playArea.innerHTML = '';
+            spotElements = [];
+
+            for (let i = 0; i < config.count; i++) {
+                const spot = document.createElement('div');
+                spot.classList.add('spot');
+                const animalDiv = document.createElement('div');
+                animalDiv.classList.add('animal');
+                const shelterDiv = document.createElement('div');
+                shelterDiv.classList.add('shelter');
+                shelterDiv.innerText = `🏠`;
+
+                spot.appendChild(animalDiv);
+                spot.appendChild(shelterDiv);
+                spot.addEventListener('click', () => handleSpotClick(i));
+                playArea.appendChild(spot);
+                spotElements.push({ animalDiv, shelterDiv });
+            }
+
+            const shuffled = [...allAnimals].sort(() => 0.5 - Math.random()).slice(0, config.count);
+            spotElements.forEach((item, idx) => {
+                item.animalDiv.innerText = shuffled[idx].emoji;
+                item.animalDiv.dataset.name = shuffled[idx].name;
+                item.shelterDiv.classList.add('open');
+            });
+
+            // 記憶時間隨著關卡格子增加而稍微拉長
+            let memoryTime = 2000 + config.count * 40;
+
+            setTimeout(() => {
+                spotElements.forEach(item => item.shelterDiv.classList.remove('open'));
+                const targetObj = shuffled[Math.floor(Math.random() * config.count)];
+                currentTarget = targetObj.name;
+                document.getElementById('mission-bar').innerHTML = `🎯 請找出：<span class="mission-target">${targetObj.emoji} ${targetObj.name}</span>`;
+                gameActive = true;
+
+                let totalT = config.time;
+                timeLeft = totalT;
+                const timerBar = document.getElementById('timer-bar');
+                timerInterval = setInterval(() => {
+                    timeLeft -= 0.1;
+                    let pct = (timeLeft / totalT) * 100;
+                    if (pct < 0) pct = 0;
+                    timerBar.style.width = `${pct}%`;
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        gameOver("時間到！");
+                    }
+                }, 100);
+            }, memoryTime);
+        }
+
+        function handleSpotClick(idx) {
+            if (!gameActive) return;
+            const clicked = spotElements[idx].animalDiv.dataset.name;
+            spotElements[idx].shelterDiv.classList.add('open');
+
+            if (clicked === currentTarget) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                playSound('correct');
+                score += (currentLevelIndex + 1) * 10; // 關卡越後面答對分數越高
+                document.getElementById('score-board').innerText = `得分: ${score}`;
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+
+                setTimeout(() => {
+                    currentLevelIndex++;
+                    if (currentLevelIndex >= levelConfig.length) {
+                        gameOver("🎉 太神啦！通關全部 30 關大滿貫！");
+                    } else {
+                        startLevel();
+                    }
+                }, 1200);
+            } else {
+                playSound('wrong');
+                document.getElementById('mission-bar').innerHTML = `❌ 這是 ${clicked}，再找找看！`;
+                setTimeout(() => {
+                    if (gameActive) spotElements[idx].shelterDiv.classList.remove('open');
+                }, 800);
+            }
+        }
+
+        function gameOver(msg) {
+            gameActive = false;
+            clearInterval(timerInterval);
+            saveScoreToLeaderboard(playerName, score);
+            renderLeaderboard();
+
+            document.getElementById('over-title').innerText = msg;
+            document.getElementById('over-desc').innerText = `玩家: ${playerName} | 最終得分: ${score} 分`;
+            document.getElementById('gameover-overlay').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
