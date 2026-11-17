@@ -67,7 +67,7 @@
         /* 畫布區域 */
         .canvas-area {
             flex: 1;
-            background: #111122; /* 沉浸式星空黑，讓螢光筆刷超顯眼 */
+            background: #111122;
             position: relative;
             cursor: crosshair;
             overflow: hidden;
@@ -76,9 +76,9 @@
             display: block;
             width: 100%;
             height: 100%;
-            touch-action: none; /* 防止手機滑動干擾畫畫 */
+            touch-action: none;
         }
-        /* 底部色彩與筆刷控制列 */
+        /* 底部色彩與工具列 */
         .toolbar {
             background: #fff8e1;
             padding: 12px 15px;
@@ -176,6 +176,7 @@
             width: 100%;
             box-shadow: 0 5px 0 #d84315;
         }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -216,7 +217,7 @@
                 <h2>✨ 神奇魔法畫板 ✨</h2>
                 <p style="color: #666; font-size: 15px;">請輸入小畫家的名字：</p>
                 <input type="text" id="painter-name" placeholder="請輸入名字..." value="小寶貝">
-                <button class="start-btn" onclick="startApp()">開始畫畫！</button>
+                <button class="start-btn" id="start-btn">開始畫畫！</button>
             </div>
         </div>
     </div>
@@ -229,18 +230,15 @@
         let soundEnabled = true;
         let audioCtx = null;
 
-        // 初始化畫布大小
         function resizeCanvas() {
             const container = document.getElementById('canvas-area');
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            ctx.lineWidth = 12; // 適合小朋友的粗筆刷
+            ctx.lineWidth = 12;
             ctx.strokeStyle = currentColor;
         }
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('load', resizeCanvas);
 
         function initAudio() {
             if (!audioCtx) {
@@ -274,17 +272,23 @@
             } catch (e) {}
         }
 
-        function startApp() {
+        // 綁定「開始畫畫」按鈕事件（同時支援點擊與手機觸控）
+        const startBtn = document.getElementById('start-btn');
+        function handleStart(e) {
+            e.preventDefault();
             initAudio();
-            const name = document.getElementById('painter-name').value.trim();
-            if (!name) {
-                alert('請輸入名字！');
-                return;
-            }
-            document.getElementById('user-display').innerText = `畫家：${name}`;
+            const nameInput = document.getElementById('painter-name');
+            const name = nameInput ? nameInput.value.trim() : "小寶貝";
+            
+            document.getElementById('user-display').innerText = `畫家：${name || '小寶貝'}`;
             document.getElementById('welcome-overlay').classList.add('hidden');
-            resizeCanvas();
+            
+            // 延遲一下確保畫布尺寸抓取正確
+            setTimeout(resizeCanvas, 50);
         }
+
+        startBtn.addEventListener('click', handleStart);
+        startBtn.addEventListener('touchend', handleStart);
 
         function setColor(color) {
             currentColor = color;
@@ -309,7 +313,6 @@
             alert('🎉 太棒了！這是一幅超棒的魔法藝術品！');
         }
 
-        // 取得滑鼠或觸控的座標
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -320,7 +323,6 @@
             };
         }
 
-        // 繪圖事件綁定 (支援滑鼠與手機/平板觸控)
         canvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
             const pos = getPos(e);
