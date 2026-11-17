@@ -2,8 +2,8 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小動物躲貓貓 - 平板音效優化版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>神奇魔法畫板 - 兒童創意塗鴉</title>
     <!-- 引入彩帶特效庫 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -15,7 +15,7 @@
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
             font-family: 'Comic Sans MS', 'Microsoft JhengHei', sans-serif;
             display: flex;
             justify-content: center;
@@ -23,144 +23,120 @@
             height: 100vh;
             overflow: hidden;
         }
-        .game-container {
+        .app-container {
             width: 100%;
-            max-width: 550px;
+            max-width: 600px;
             height: 100%;
-            max-height: 900px;
+            max-height: 950px;
             background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            border: 4px solid #fff;
+            border: 6px solid #fff;
         }
+        /* 頂部標題與工具列 */
         .header {
-            background: #4a90e2;
-            padding: 12px 18px;
+            background: #ff7043;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #fff;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
         }
-        .user-info {
+        .header-title {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 14px;
+            gap: 8px;
         }
         .sound-btn {
             background: #ffca28;
             border: none;
             padding: 6px 12px;
-            border-radius: 15px;
+            border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
             color: #d84315;
             box-shadow: 0 2px 0 #ffa000;
         }
-        .sub-header {
+        /* 畫布區域 */
+        .canvas-area {
+            flex: 1;
+            background: #111122; /* 沉浸式星空黑，讓螢光筆刷超顯眼 */
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none; /* 防止手機滑動干擾畫畫 */
+        }
+        /* 底部色彩與筆刷控制列 */
+        .toolbar {
             background: #fff8e1;
-            padding: 10px 18px;
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-top: 3px solid #ffe082;
+        }
+        .palette {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .color-btn.active {
+            transform: scale(1.25);
+            border-color: #333;
+        }
+        .tools-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #ffe082;
-            font-size: 16px;
-        }
-        .timer-container {
-            width: 100%;
-            height: 12px;
-            background: #eee;
-            position: relative;
-        }
-        .timer-bar {
-            height: 100%;
-            width: 100%;
-            background: #66bb6a;
-            transition: width 0.1s linear;
-        }
-        .mission-bar {
-            background: #e1f5fe;
-            color: #01579b;
-            padding: 12px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            border-bottom: 3px dashed #b3e5fc;
-            min-height: 55px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .mission-target {
-            font-size: 24px;
-            color: #e65100;
-            margin-left: 6px;
-        }
-        .play-area {
-            flex: 1;
-            background: #f1f8e9;
-            position: relative;
-            display: grid;
             gap: 10px;
-            padding: 18px;
-            align-items: center;
-            justify-items: center;
-            overflow-y: auto;
         }
-        /* 平板與手機適配的方塊與圖標大小 */
-        .spot {
-            background: #8d6e63;
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #5d4037;
-            position: relative;
-            width: 100%;
-            height: 100%;
-            min-height: 80px;
-        }
-        .animal, .shelter {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 16px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .animal { font-size: 48px; z-index: 1; }
-        .shelter {
-            background: #ffb74d;
-            z-index: 2;
-            border: 3px solid #f57c00;
-            font-size: 18px;
-            color: #fff;
+        .action-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 16px;
             font-weight: bold;
-            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15);
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #388e3c;
+            flex: 1;
         }
-        .shelter.open {
-            transform: translateY(-70px) scale(0.7);
-            opacity: 0;
-            pointer-events: none;
+        .action-btn.clear {
+            background: #e57373;
+            box-shadow: 0 4px 0 #c62828;
         }
-        .message-overlay {
+        .action-btn.save {
+            background: #4285F4;
+            box-shadow: 0 4px 0 #1967d2;
+        }
+        /* 歡迎遮罩 */
+        .welcome-overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -170,16 +146,16 @@
             padding: 20px;
             text-align: center;
         }
-        .login-card {
+        .welcome-card {
             background: #fff;
             color: #333;
             padding: 30px;
-            border-radius: 20px;
+            border-radius: 25px;
             width: 90%;
-            max-width: 380px;
+            max-width: 400px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        .login-card input {
+        .welcome-card input {
             width: 100%;
             padding: 12px;
             font-size: 18px;
@@ -188,107 +164,84 @@
             border-radius: 12px;
             text-align: center;
         }
-        .google-btn {
-            background: #4285F4;
+        .start-btn {
+            background: #ff7043;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 4px 0 #2a65c7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .leaderboard-list {
-            background: #fff;
-            color: #333;
-            width: 100%;
-            max-width: 380px;
-            border-radius: 12px;
-            padding: 10px;
-            margin: 12px 0;
-            text-align: left;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 10px;
-            border-bottom: 1px solid #eee;
-            font-size: 16px;
-        }
-        .action-btn {
-            margin-top: 15px;
-            background: #ffca28;
-            color: #d84315;
-            border: none;
-            padding: 12px 35px;
+            padding: 12px 25px;
             font-size: 20px;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 0 #ffa000;
+            width: 100%;
+            box-shadow: 0 5px 0 #d84315;
         }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="game-container">
+    <div class="app-container">
+        <!-- 頂部列 -->
         <div class="header">
-            <div class="user-info" id="current-user-display">
-                <span>👤 尚未登入</span>
+            <div class="header-title">
+                <span>🎨</span> <span id="user-display">神奇魔法畫板</span>
             </div>
             <button class="sound-btn" id="sound-toggle-btn" onclick="toggleSound()">🔊 音效: 開</button>
         </div>
 
-        <div class="sub-header">
-            <span id="score-board">得分: 0</span>
-            <span id="level-display" style="font-weight: bold; color: #d84315;">第 1 關</span>
+        <!-- 畫布區域 -->
+        <div class="canvas-area" id="canvas-area">
+            <canvas id="paintCanvas"></canvas>
         </div>
 
-        <div class="timer-container">
-            <div class="timer-bar" id="timer-bar"></div>
-        </div>
-
-        <div class="mission-bar" id="mission-bar">請輸入名字開始遊戲！</div>
-
-        <div class="play-area" id="play-area"></div>
-
-        <div id="login-overlay" class="message-overlay">
-            <div class="login-card">
-                <h2>🐾 小動物躲貓貓</h2>
-                <p style="color: #666; font-size: 15px;">請輸入小朋友名字紀錄成績：</p>
-                <input type="text" id="player-name-input" placeholder="請輸入名字..." value="小寶貝">
-                <button class="google-btn" onclick="loginWithGoogle()">
-                    <span>🌐</span> 開始遊戲
-                </button>
+        <!-- 底部色彩與工具列 -->
+        <div class="toolbar">
+            <div class="palette">
+                <div class="color-btn active" style="background: #ff5252;" onclick="setColor('#ff5252')"></div>
+                <div class="color-btn" style="background: #ffeb3b;" onclick="setColor('#ffeb3b')"></div>
+                <div class="color-btn" style="background: #69f0ae;" onclick="setColor('#69f0ae')"></div>
+                <div class="color-btn" style="background: #40c4ff;" onclick="setColor('#40c4ff')"></div>
+                <div class="color-btn" style="background: #e040fb;" onclick="setColor('#e040fb')"></div>
+                <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff')"></div>
+            </div>
+            <div class="tools-row">
+                <button class="action-btn clear" onclick="clearCanvas()">🗑️ 全部清除</button>
+                <button class="action-btn save" onclick="finishArt()">✨ 完成作品！</button>
             </div>
         </div>
 
-        <div id="gameover-overlay" class="message-overlay hidden">
-            <h1 id="over-title">遊戲結束</h1>
-            <p id="over-desc" style="font-size: 18px; margin: 5px 0;">得分: 0</p>
-            
-            <h3 style="margin: 10px 0 5px 0; color: #ffca28;">🏆 排行榜</h3>
-            <div class="leaderboard-list" id="leaderboard-container"></div>
-
-            <button class="action-btn" onclick="restartGame()">再玩一次！</button>
+        <!-- 進入畫面遮罩 -->
+        <div id="welcome-overlay" class="welcome-overlay">
+            <div class="welcome-card">
+                <h2>✨ 神奇魔法畫板 ✨</h2>
+                <p style="color: #666; font-size: 15px;">請輸入小畫家的名字：</p>
+                <input type="text" id="painter-name" placeholder="請輸入名字..." value="小寶貝">
+                <button class="start-btn" onclick="startApp()">開始畫畫！</button>
+            </div>
         </div>
     </div>
 
     <script>
-        let playerName = "";
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let currentColor = '#ff5252';
         let soundEnabled = true;
         let audioCtx = null;
 
-        // 初始化與解鎖平板音訊引擎
+        // 初始化畫布大小
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-area');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 12; // 適合小朋友的粗筆刷
+            ctx.strokeStyle = currentColor;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', resizeCanvas);
+
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -304,217 +257,105 @@
             if (soundEnabled) initAudio();
         }
 
-        function playSound(type) {
+        function playPopSound() {
             if (!soundEnabled) return;
             initAudio();
             if (!audioCtx) return;
-
             try {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 const now = audioCtx.currentTime;
-
-                if (type === 'correct') {
-                    osc.frequency.setValueAtTime(523.25, now);
-                    osc.frequency.setValueAtTime(659.25, now + 0.1);
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-                    osc.start(now); osc.stop(now + 0.35);
-                } else if (type === 'wrong') {
-                    osc.frequency.setValueAtTime(200, now);
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-                    osc.start(now); osc.stop(now + 0.35);
-                }
-            } catch (e) {
-                console.log("Audio play error:", e);
-            }
+                osc.frequency.setValueAtTime(300 + Math.random() * 400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } catch (e) {}
         }
 
-        function loginWithGoogle() {
-            initAudio(); // 點擊開始按鈕時立刻解鎖平板聲音
-            const inputName = document.getElementById('player-name-input').value.trim();
-            if (!inputName) {
+        function startApp() {
+            initAudio();
+            const name = document.getElementById('painter-name').value.trim();
+            if (!name) {
                 alert('請輸入名字！');
                 return;
             }
-            playerName = "玩家: " + inputName;
-            document.getElementById('current-user-display').innerHTML = `<span>👤 ${playerName}</span>`;
-            document.getElementById('login-overlay').classList.add('hidden');
-            startGame();
+            document.getElementById('user-display').innerText = `畫家：${name}`;
+            document.getElementById('welcome-overlay').classList.add('hidden');
+            resizeCanvas();
         }
 
-        function getLeaderboard() {
-            return JSON.parse(localStorage.getItem('animal_game_leaderboard')) || [
-                { name: '小明', score: 120 },
-                { name: '晴晴', score: 100 },
-                { name: '樂樂', score: 80 }
-            ];
+        function setColor(color) {
+            currentColor = color;
+            ctx.strokeStyle = color;
+            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
         }
 
-        function saveScoreToLeaderboard(name, sc) {
-            let lb = getLeaderboard();
-            lb.push({ name: name, score: sc });
-            lb.sort((a, b) => b.score - a.score);
-            if (lb.length > 5) lb = lb.slice(0, 5);
-            localStorage.setItem('animal_game_leaderboard', JSON.stringify(lb));
-        }
-
-        function renderLeaderboard() {
-            let lb = getLeaderboard();
-            const container = document.getElementById('leaderboard-container');
-            container.innerHTML = lb.map((item, idx) => `
-                <div class="leaderboard-item">
-                    <span>${idx+1}. ${item.name}</span>
-                    <span style="font-weight: bold; color: #e65100;">${item.score} 分</span>
-                </div>
-            `).join('');
-        }
-
-        const allAnimals = [
-            { name: '小兔子', emoji: '🐰' }, { name: '小熊', emoji: '🐻' },
-            { name: '小青蛙', emoji: '🐸' }, { name: '小貓咪', emoji: '🐱' },
-            { name: '小狗狗', emoji: '🐶' }, { name: '小狐狸', emoji: '🦊' },
-            { name: '小老虎', emoji: '🐯' }, { name: '小獅子', emoji: '🦁' },
-            { name: '小猴子', emoji: '🐵' }, { name: '小豬', emoji: '🐷' },
-            { name: '小企鵝', emoji: '🐧' }, { name: '小無尾熊', emoji: '🐨' },
-            { name: '小貓熊', emoji: '🐼' }, { name: '小雞', emoji: '🐥' },
-            { name: '小牛', emoji: '🐮' }, { name: '小章魚', emoji: '🐙' }
-        ];
-
-        const levelConfig = [
-            { level: 1, count: 4, time: 15 },
-            { level: 2, count: 6, time: 18 },
-            { level: 3, count: 8, time: 20 },
-            { level: 4, count: 10, time: 22 },
-            { level: 5, count: 12, time: 25 },
-            { level: 6, count: 14, time: 30 }
-        ];
-
-        let currentLevelIndex = 0;
-        let score = 0;
-        let currentTarget = null;
-        let gameActive = false;
-        let spotElements = [];
-        let timerInterval = null;
-        let timeLeft = 0;
-
-        function startGame() {
-            currentLevelIndex = 0;
-            score = 0;
-            document.getElementById('score-board').innerText = `得分: ${score}`;
-            startLevel();
-        }
-
-        function restartGame() {
-            document.getElementById('gameover-overlay').classList.add('hidden');
-            startGame();
-        }
-
-        function startLevel() {
-            gameActive = false;
-            clearInterval(timerInterval);
-            const config = levelConfig[currentLevelIndex];
-            document.getElementById('level-display').innerText = `第 ${config.level}/6 關`;
-            document.getElementById('mission-bar').innerHTML = `👀 記憶第 ${config.level} 關位置...`;
-
-            const playArea = document.getElementById('play-area');
-            if (config.count <= 4) playArea.style.gridTemplateColumns = 'repeat(2, 1fr)';
-            else if (config.count <= 9) playArea.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            else playArea.style.gridTemplateColumns = 'repeat(4, 1fr)';
-
-            playArea.innerHTML = '';
-            spotElements = [];
-
-            for (let i = 0; i < config.count; i++) {
-                const spot = document.createElement('div');
-                spot.classList.add('spot');
-                const animalDiv = document.createElement('div');
-                animalDiv.classList.add('animal');
-                const shelterDiv = document.createElement('div');
-                shelterDiv.classList.add('shelter');
-                shelterDiv.innerText = `🏠`;
-
-                spot.appendChild(animalDiv);
-                spot.appendChild(shelterDiv);
-                spot.addEventListener('click', () => handleSpotClick(i));
-                playArea.appendChild(spot);
-                spotElements.push({ animalDiv, shelterDiv });
+        function clearCanvas() {
+            if (confirm('確定要清空畫布重新開始嗎？')) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
+        }
 
-            const shuffled = [...allAnimals].sort(() => 0.5 - Math.random()).slice(0, config.count);
-            spotElements.forEach((item, idx) => {
-                item.animalDiv.innerText = shuffled[idx].emoji;
-                item.animalDiv.dataset.name = shuffled[idx].name;
-                item.shelterDiv.classList.add('open');
+        function finishArt() {
+            playPopSound();
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 }
             });
-
-            setTimeout(() => {
-                spotElements.forEach(item => item.shelterDiv.classList.remove('open'));
-                const targetObj = shuffled[Math.floor(Math.random() * config.count)];
-                currentTarget = targetObj.name;
-                document.getElementById('mission-bar').innerHTML = `🎯 請找出：<span class="mission-target">${targetObj.emoji} ${targetObj.name}</span>`;
-                gameActive = true;
-
-                let totalT = config.time;
-                timeLeft = totalT;
-                const timerBar = document.getElementById('timer-bar');
-                timerInterval = setInterval(() => {
-                    timeLeft -= 0.1;
-                    let pct = (timeLeft / totalT) * 100;
-                    if (pct < 0) pct = 0;
-                    timerBar.style.width = `${pct}%`;
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        gameOver("時間到！");
-                    }
-                }, 100);
-            }, 2000);
+            alert('🎉 太棒了！這是一幅超棒的魔法藝術品！');
         }
 
-        function handleSpotClick(idx) {
-            if (!gameActive) return;
-            initAudio(); // 確保點擊時有聲音
-            const clicked = spotElements[idx].animalDiv.dataset.name;
-            spotElements[idx].shelterDiv.classList.add('open');
-
-            if (clicked === currentTarget) {
-                gameActive = false;
-                clearInterval(timerInterval);
-                playSound('correct');
-                score += (currentLevelIndex + 1) * 15;
-                document.getElementById('score-board').innerText = `得分: ${score}`;
-                confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
-
-                setTimeout(() => {
-                    currentLevelIndex++;
-                    if (currentLevelIndex >= levelConfig.length) {
-                        gameOver("🎉 太棒了！完美通關 6 個關卡！");
-                    } else {
-                        startLevel();
-                    }
-                }, 1200);
-            } else {
-                playSound('wrong');
-                document.getElementById('mission-bar').innerHTML = `❌ 這是 ${clicked}，再找找！`;
-                setTimeout(() => {
-                    if (gameActive) spotElements[idx].shelterDiv.classList.remove('open');
-                }, 800);
-            }
+        // 取得滑鼠或觸控的座標
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
         }
 
-        function gameOver(msg) {
-            gameActive = false;
-            clearInterval(timerInterval);
-            saveScoreToLeaderboard(playerName, score);
-            renderLeaderboard();
+        // 繪圖事件綁定 (支援滑鼠與手機/平板觸控)
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        });
 
-            document.getElementById('over-title').innerText = msg;
-            document.getElementById('over-desc').innerText = `玩家: ${playerName} | 最終得分: ${score} 分`;
-            document.getElementById('gameover-overlay').classList.remove('hidden');
-        }
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            playPopSound();
+        });
+
+        window.addEventListener('mouseup', () => { isDrawing = false; });
+
+        canvas.addEventListener('touchstart', (e) => {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            playPopSound();
+            e.preventDefault();
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => { isDrawing = false; });
     </script>
 </body>
 </html>
