@@ -153,15 +153,8 @@
 
         .hidden { display: none !important; }
 
-        /* 畫板介面 */
-        .paint-app {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .paint-header {
-            background: #ff7043;
+        /* 通用遊戲頁首 */
+        .game-header {
             padding: 12px 20px;
             display: flex;
             justify-content: space-between;
@@ -169,14 +162,14 @@
             color: #fff;
             font-size: 18px;
             font-weight: bold;
+            flex-shrink: 0;
         }
-        .paint-header .header-title {
+        .game-header .header-title {
             display: flex;
             align-items: center;
             gap: 8px;
         }
         .back-btn {
-            background: #ffca28;
             border: none;
             padding: 6px 14px;
             border-radius: 20px;
@@ -184,438 +177,173 @@
             font-size: 14px;
             font-weight: bold;
             color: #d84315;
-            box-shadow: 0 2px 0 #ffa000;
-        }
-        .canvas-area {
-            flex: 1;
-            background: #111122;
-            position: relative;
-            cursor: crosshair;
-            overflow: hidden;
-        }
-        .canvas-area canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-        }
-        .toolbar {
-            background: #fff8e1;
-            padding: 12px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border-top: 3px solid #ffe082;
-        }
-        .palette {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-        .color-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 3px solid #fff;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-        .color-btn.active {
-            transform: scale(1.25);
-            border-color: #333;
-        }
-        .tools-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        .action-btn {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #388e3c;
-            flex: 1;
-        }
-        .action-btn.clear {
-            background: #e57373;
-            box-shadow: 0 4px 0 #c62828;
-        }
-        .action-btn.save {
-            background: #4285F4;
-            box-shadow: 0 4px 0 #1967d2;
         }
 
-        /* 翻牌介面 */
-        .memory-app {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        /* 畫板 */
+        .paint-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .paint-header { background: #ff7043; }
+        .paint-header .back-btn { background: #ffca28; box-shadow: 0 2px 0 #ffa000; }
+        .paint-header .sound-btn { background: #ffca28; box-shadow: 0 2px 0 #ffa000; }
+        .canvas-area {
+            flex: 1; background: #111122; position: relative; cursor: crosshair; overflow: hidden;
         }
-        .memory-header {
-            background: #7b1fa2;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-            font-size: 18px;
-            font-weight: bold;
-            flex-shrink: 0;
+        .canvas-area canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+        .toolbar {
+            background: #fff8e1; padding: 12px 15px; display: flex; flex-direction: column; gap: 10px;
+            border-top: 3px solid #ffe082;
         }
-        .memory-header .header-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .palette { display: flex; justify-content: space-around; align-items: center; }
+        .color-btn {
+            width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff;
+            cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.2s;
         }
-        .memory-header .back-btn {
-            background: #ce93d8;
-            box-shadow: 0 2px 0 #8e24aa;
+        .color-btn.active { transform: scale(1.25); border-color: #333; }
+        .tools-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .action-btn {
+            background: #4caf50; color: white; border: none; padding: 10px 18px;
+            font-size: 16px; font-weight: bold; border-radius: 25px; cursor: pointer;
+            box-shadow: 0 4px 0 #388e3c; flex: 1;
         }
+        .action-btn.clear { background: #e57373; box-shadow: 0 4px 0 #c62828; }
+        .action-btn.save { background: #4285F4; box-shadow: 0 4px 0 #1967d2; }
+
+        /* 翻牌 */
+        .memory-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .memory-header { background: #7b1fa2; }
+        .memory-header .back-btn { background: #ce93d8; box-shadow: 0 2px 0 #8e24aa; }
+        .memory-header .sound-btn { background: #ce93d8; box-shadow: 0 2px 0 #8e24aa; }
         .memory-content {
-            flex: 1;
-            padding: 16px;
-            background: linear-gradient(180deg, #f3e5f5, #e1bee7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            overflow-y: auto;
+            flex: 1; padding: 16px; background: linear-gradient(180deg, #f3e5f5, #e1bee7);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 14px; overflow-y: auto;
         }
         .memory-status {
-            background: #fff;
-            border-radius: 20px;
-            padding: 10px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #6a1b9a;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-            text-align: center;
+            background: #fff; border-radius: 20px; padding: 10px 24px; font-size: 16px;
+            font-weight: bold; color: #6a1b9a; box-shadow: 0 4px 0 rgba(0,0,0,0.1); text-align: center;
         }
         .memory-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            width: 100%;
-            max-width: 360px;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            width: 100%; max-width: 360px;
         }
-        .card {
-            aspect-ratio: 1 / 1;
-            perspective: 600px;
-            cursor: pointer;
-        }
+        .card { aspect-ratio: 1 / 1; perspective: 600px; cursor: pointer; }
         .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.4s;
-            transform-style: preserve-3d;
-            border-radius: 14px;
+            position: relative; width: 100%; height: 100%; transition: transform 0.4s;
+            transform-style: preserve-3d; border-radius: 14px;
         }
-        .card.flipped .card-inner,
-        .card.matched .card-inner {
-            transform: rotateY(180deg);
-        }
+        .card.flipped .card-inner, .card.matched .card-inner { transform: rotateY(180deg); }
         .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 0 rgba(0,0,0,0.15);
         }
         .card-front {
-            background: linear-gradient(135deg, #ba68c8, #7b1fa2);
-            color: #fff;
-            font-size: 40px;
+            background: linear-gradient(135deg, #ba68c8, #7b1fa2); color: #fff; font-size: 40px;
         }
         .card-back {
-            background: #fff;
-            transform: rotateY(180deg);
-            border: 3px solid #ce93d8;
+            background: #fff; transform: rotateY(180deg); border: 3px solid #ce93d8; font-size: 34px;
         }
-        .card.matched .card-back {
-            background: #c8e6c9;
-            border-color: #81c784;
-        }
-        .memory-actions {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            max-width: 360px;
-        }
-        .memory-actions .action-btn {
-            flex: 1;
-            font-size: 15px;
-            padding: 10px 0;
-        }
-        .memory-actions .action-btn.reset {
-            background: #7b1fa2;
-            box-shadow: 0 4px 0 #4a148c;
-        }
+        .card.matched .card-back { background: #c8e6c9; border-color: #81c784; }
+        .memory-actions { display: flex; gap: 12px; width: 100%; max-width: 360px; }
+        .memory-actions .action-btn { flex: 1; font-size: 15px; padding: 10px 0; }
+        .memory-actions .action-btn.reset { background: #7b1fa2; box-shadow: 0 4px 0 #4a148c; }
         .memory-win {
-            font-size: 18px;
-            font-weight: bold;
-            color: #6a1b9a;
-            text-align: center;
-            padding: 10px;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 360px;
-            display: none;
+            font-size: 18px; font-weight: bold; color: #6a1b9a; text-align: center;
+            padding: 10px; background: #fff; border-radius: 16px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1); width: 100%; max-width: 360px; display: none;
         }
-        .memory-win.show {
-            display: block;
-        }
+        .memory-win.show { display: block; }
 
-        /* ---------- 猜數字介面 ---------- */
-        .guess-app {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .guess-header {
-            background: #00897b;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-            font-size: 18px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-        .guess-header .header-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .guess-header .back-btn {
-            background: #80cbc4;
-            box-shadow: 0 2px 0 #00695c;
-        }
+        /* 猜數字 */
+        .guess-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .guess-header { background: #00897b; }
+        .guess-header .back-btn { background: #80cbc4; box-shadow: 0 2px 0 #00695c; }
+        .guess-header .sound-btn { background: #80cbc4; box-shadow: 0 2px 0 #00695c; color: #004d40; }
         .guess-content {
-            flex: 1;
-            padding: 20px;
-            background: linear-gradient(180deg, #e0f2f1, #b2dfdb);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            overflow-y: auto;
+            flex: 1; padding: 20px; background: linear-gradient(180deg, #e0f2f1, #b2dfdb);
+            display: flex; flex-direction: column; align-items: center; gap: 16px; overflow-y: auto;
         }
         .guess-tip {
-            background: #fff;
-            border-radius: 18px;
-            padding: 14px 20px;
-            font-size: 15px;
-            color: #00695c;
-            text-align: center;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.08);
-            line-height: 1.5;
-            width: 100%;
-            max-width: 380px;
+            background: #fff; border-radius: 18px; padding: 14px 20px; font-size: 15px;
+            color: #00695c; text-align: center; box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+            line-height: 1.6; width: 100%; max-width: 380px;
         }
-        .guess-tip strong {
-            color: #d84315;
-        }
-        .guess-input-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            max-width: 380px;
-            align-items: center;
-        }
+        .guess-tip strong { color: #d84315; }
+        .guess-input-row { display: flex; gap: 10px; width: 100%; max-width: 380px; align-items: center; }
         .guess-input-row input {
-            flex: 1;
-            padding: 14px;
-            font-size: 24px;
-            text-align: center;
-            border: 3px solid #4db6ac;
-            border-radius: 16px;
-            outline: none;
-            font-weight: bold;
-            color: #00695c;
-            min-width: 0;
+            flex: 1; padding: 14px; font-size: 24px; text-align: center;
+            border: 3px solid #4db6ac; border-radius: 16px; outline: none;
+            font-weight: bold; color: #00695c; min-width: 0;
         }
-        .guess-input-row input:focus {
-            border-color: #00897b;
-        }
+        .guess-input-row input:focus { border-color: #00897b; }
         .guess-submit {
-            background: #00897b;
-            color: #fff;
-            border: none;
-            padding: 14px 22px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 16px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #004d40;
-            flex-shrink: 0;
+            background: #00897b; color: #fff; border: none; padding: 14px 22px;
+            font-size: 18px; font-weight: bold; border-radius: 16px; cursor: pointer;
+            box-shadow: 0 4px 0 #004d40; flex-shrink: 0;
         }
-        .guess-submit:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #004d40;
-        }
+        .guess-submit:active { transform: translateY(2px); box-shadow: 0 2px 0 #004d40; }
         .guess-history {
-            width: 100%;
-            max-width: 380px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 260px;
-            overflow-y: auto;
+            width: 100%; max-width: 380px; display: flex; flex-direction: column;
+            gap: 8px; max-height: 260px; overflow-y: auto;
         }
         .guess-item {
-            background: #fff;
-            border-radius: 14px;
-            padding: 10px 16px;
-            font-size: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.06);
-            animation: slideIn 0.25s ease;
+            background: #fff; border-radius: 14px; padding: 10px 16px; font-size: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.06); animation: slideIn 0.25s ease;
         }
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-6px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .guess-item .num {
-            font-weight: bold;
-            font-size: 18px;
-            color: #00695c;
-        }
-        .guess-item .hint {
-            font-weight: bold;
-        }
+        .guess-item .num { font-weight: bold; font-size: 18px; color: #00695c; }
+        .guess-item .hint { font-weight: bold; }
         .guess-item .hint.too-high { color: #e53935; }
         .guess-item .hint.too-low { color: #1e88e5; }
         .guess-item .hint.correct { color: #43a047; }
         .guess-result {
-            background: #fff;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            width: 100%;
-            max-width: 380px;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.08);
-            display: none;
+            background: #fff; border-radius: 20px; padding: 20px; text-align: center;
+            width: 100%; max-width: 380px; box-shadow: 0 5px 0 rgba(0,0,0,0.08); display: none;
         }
-        .guess-result.show {
-            display: block;
-        }
-        .guess-result .big-emoji {
-            font-size: 56px;
-            margin-bottom: 6px;
-        }
-        .guess-result h3 {
-            margin: 0 0 8px;
-            color: #00695c;
-            font-size: 22px;
-        }
-        .guess-result p {
-            margin: 0 0 14px;
-            color: #666;
-            font-size: 15px;
-        }
+        .guess-result.show { display: block; }
+        .guess-result .big-emoji { font-size: 56px; margin-bottom: 6px; }
+        .guess-result h3 { margin: 0 0 8px; color: #00695c; font-size: 22px; }
+        .guess-result p { margin: 0 0 14px; color: #666; font-size: 15px; }
         .guess-result button {
-            background: #00897b;
-            color: #fff;
-            border: none;
-            padding: 12px 30px;
-            font-size: 17px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
+            background: #00897b; color: #fff; border: none; padding: 12px 30px;
+            font-size: 17px; font-weight: bold; border-radius: 30px; cursor: pointer;
             box-shadow: 0 4px 0 #004d40;
         }
-        .guess-actions {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            max-width: 380px;
-        }
-        .guess-actions .action-btn {
-            flex: 1;
-            font-size: 15px;
-            padding: 12px 0;
-        }
-        .guess-actions .action-btn.reset {
-            background: #00897b;
-            box-shadow: 0 4px 0 #004d40;
-        }
+        .guess-actions { display: flex; gap: 12px; width: 100%; max-width: 380px; }
+        .guess-actions .action-btn { flex: 1; font-size: 15px; padding: 12px 0; }
+        .guess-actions .action-btn.reset { background: #00897b; box-shadow: 0 4px 0 #004d40; }
 
         /* 遮罩 */
         .welcome-overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            z-index: 10;
-            padding: 20px;
-            text-align: center;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; color: #fff; z-index: 10;
+            padding: 20px; text-align: center;
         }
         .welcome-card {
-            background: #fff;
-            color: #333;
-            padding: 30px;
-            border-radius: 25px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            background: #fff; color: #333; padding: 30px; border-radius: 25px;
+            width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        .welcome-card h2 {
-            margin-top: 0;
-        }
+        .welcome-card h2 { margin-top: 0; }
         .welcome-card input {
-            width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            margin: 15px 0;
-            border: 2px solid #ccc;
-            border-radius: 12px;
-            text-align: center;
+            width: 100%; padding: 12px; font-size: 18px; margin: 15px 0;
+            border: 2px solid #ccc; border-radius: 12px; text-align: center;
         }
         .start-btn {
-            background: #ff7043;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 5px 0 #d84315;
+            background: #ff7043; color: white; border: none; padding: 12px 25px;
+            font-size: 20px; font-weight: bold; border-radius: 50px; cursor: pointer;
+            width: 100%; box-shadow: 0 5px 0 #d84315;
         }
     </style>
 </head>
 <body>
 
     <div class="app-container" id="appContainer">
-        <!-- 大廳視圖 -->
-        <div id="lobbyView" class="lobby-view" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+        <!-- ========== 大廳視圖 ========== -->
+        <div id="lobbyView" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
             <div class="header">
                 <div class="header-title">
                     <span>🎮</span> <span>遊戲大廳</span>
@@ -627,8 +355,7 @@
                     <h2>👋 歡迎，<span id="lobby-username">小寶貝</span>！</h2>
                     <p>請選擇想玩的遊戲，更多遊戲陸續新增中 ✨</p>
                 </div>
-                <div class="game-grid" id="gameGrid">
-                    <!-- 魔法畫板 -->
+                <div class="game-grid">
                     <div class="game-card" onclick="launchGame('paint')">
                         <div class="game-icon">🎨</div>
                         <div class="game-info">
@@ -637,7 +364,6 @@
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
-                    <!-- 記憶翻牌 -->
                     <div class="game-card" onclick="launchGame('memory')">
                         <div class="game-icon">🃏</div>
                         <div class="game-info">
@@ -646,7 +372,6 @@
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
-                    <!-- 猜數字 -->
                     <div class="game-card" onclick="launchGame('guess')">
                         <div class="game-icon">🔢</div>
                         <div class="game-info">
@@ -659,9 +384,9 @@
             </div>
         </div>
 
-        <!-- 畫板遊戲視圖 -->
+        <!-- ========== 畫板視圖 ========== -->
         <div id="paintView" class="paint-app hidden">
-            <div class="paint-header">
+            <div class="game-header paint-header">
                 <div class="header-title">
                     <span>🎨</span> <span id="user-display">神奇魔法畫板</span>
                 </div>
@@ -689,9 +414,9 @@
             </div>
         </div>
 
-        <!-- 記憶翻牌遊戲視圖 -->
+        <!-- ========== 翻牌視圖 ========== -->
         <div id="memoryView" class="memory-app hidden">
-            <div class="memory-header">
+            <div class="game-header memory-header">
                 <div class="header-title">
                     <span>🃏</span> <span id="memory-user-display">記憶翻牌</span>
                 </div>
@@ -710,9 +435,9 @@
             </div>
         </div>
 
-        <!-- 猜數字遊戲視圖 -->
+        <!-- ========== 猜數字視圖 ========== -->
         <div id="guessView" class="guess-app hidden">
-            <div class="guess-header">
+            <div class="game-header guess-header">
                 <div class="header-title">
                     <span>🔢</span> <span id="guess-user-display">猜數字</span>
                 </div>
@@ -742,7 +467,7 @@
             </div>
         </div>
 
-        <!-- 進入遮罩 -->
+        <!-- ========== 進入遮罩 ========== -->
         <div id="welcome-overlay" class="welcome-overlay">
             <div class="welcome-card">
                 <h2>✨ 遊戲樂園 ✨</h2>
@@ -771,7 +496,7 @@
 
         function updateSoundButtons() {
             const label = soundEnabled ? '🔊 音效: 開' : '🔇 音效: 關';
-            ['sound-toggle-btn-lobby','sound-toggle-btn-paint','sound-toggle-btn-memory','sound-toggle-btn-guess'].forEach(id => {
+            ['sound-toggle-btn-lobby', 'sound-toggle-btn-paint', 'sound-toggle-btn-memory', 'sound-toggle-btn-guess'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.innerText = label;
             });
@@ -842,7 +567,6 @@
             } catch (e) {}
         }
 
-        // 猜測錯誤音效（低沉）
         function playWrongSound() {
             if (!soundEnabled) return;
             initAudio();
@@ -863,7 +587,6 @@
             } catch (e) {}
         }
 
-        // 猜對音效（上行琶音）
         function playWinSound() {
             if (!soundEnabled) return;
             initAudio();
@@ -968,4 +691,302 @@
             currentColor = color;
             ctx.strokeStyle = color;
             document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            if (e && e.target) e.target.classList
+            if (e && e.target) e.target.classList.add('active');
+        }
+
+        function clearCanvas() {
+            if (confirm('確定要清空畫布重新開始嗎？')) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function finishArt() {
+            playPopSound();
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            alert('🎉 太棒了！這是一幅超棒的魔法藝術品！');
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            playPopSound();
+        });
+
+        window.addEventListener('mouseup', () => { isDrawing = false; });
+
+        canvas.addEventListener('touchstart', (e) => {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            playPopSound();
+            e.preventDefault();
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => { isDrawing = false; });
+
+        window.addEventListener('resize', () => {
+            if (!paintView.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        });
+
+        // ========== 記憶翻牌邏輯 ==========
+        const EMOJIS = ['🐶', '🐱', '🐼', '🦊', '🐸', '🐵', '🦄', '🐷'];
+        const TOTAL_PAIRS = EMOJIS.length;
+
+        let memoryDeck = [];
+        let memoryFlipped = [];
+        let memoryMatched = 0;
+        let memoryLock = false;
+        let memoryFlipTimer = null;
+
+        const memoryGridEl = document.getElementById('memoryGrid');
+        const memoryStatusEl = document.getElementById('memoryStatus');
+        const memoryWinEl = document.getElementById('memoryWin');
+
+        function shuffle(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function createDeck() {
+            let deck = [];
+            EMOJIS.forEach((emoji, index) => {
+                deck.push({ emoji, pairId: index, id: deck.length });
+                deck.push({ emoji, pairId: index, id: deck.length });
+            });
+            return shuffle(deck);
+        }
+
+        function renderMemoryGrid() {
+            memoryGridEl.innerHTML = '';
+            memoryDeck.forEach((card) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.dataset.cardId = card.id;
+                cardEl.dataset.pairId = card.pairId;
+
+                const inner = document.createElement('div');
+                inner.className = 'card-inner';
+
+                const front = document.createElement('div');
+                front.className = 'card-front';
+                front.textContent = '❓';
+
+                const back = document.createElement('div');
+                back.className = 'card-back';
+                back.textContent = card.emoji;
+
+                inner.appendChild(front);
+                inner.appendChild(back);
+                cardEl.appendChild(inner);
+
+                cardEl.addEventListener('click', () => handleCardClick(cardEl));
+                memoryGridEl.appendChild(cardEl);
+            });
+        }
+
+        function handleCardClick(cardEl) {
+            if (memoryLock) return;
+            if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+            if (memoryFlipped.length >= 2) return;
+
+            cardEl.classList.add('flipped');
+            playFlipSound();
+            memoryFlipped.push(cardEl);
+
+            if (memoryFlipped.length === 2) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = memoryFlipped;
+            const pair1 = card1.dataset.pairId;
+            const pair2 = card2.dataset.pairId;
+
+            if (pair1 === pair2) {
+                setTimeout(() => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    memoryMatched++;
+                    updateMemoryStatus();
+                    playMatchSound();
+                    memoryFlipped = [];
+                    memoryLock = false;
+
+                    if (memoryMatched === TOTAL_PAIRS) {
+                        winMemoryGame();
+                    }
+                }, 350);
+                memoryLock = true;
+            } else {
+                memoryLock = true;
+                memoryFlipTimer = setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    memoryFlipped = [];
+                    memoryLock = false;
+                    memoryFlipTimer = null;
+                }, 900);
+            }
+        }
+
+        function updateMemoryStatus() {
+            memoryStatusEl.innerText = `找到 ${memoryMatched} / ${TOTAL_PAIRS} 組配對`;
+        }
+
+        function winMemoryGame() {
+            memoryWinEl.classList.add('show');
+            playMatchSound();
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+            setTimeout(() => {
+                confetti({ particleCount: 100, spread: 120, origin: { y: 0.4 } });
+            }, 300);
+        }
+
+        function startMemoryGame() {
+            if (memoryFlipTimer) {
+                clearTimeout(memoryFlipTimer);
+                memoryFlipTimer = null;
+            }
+            memoryDeck = createDeck();
+            memoryFlipped = [];
+            memoryMatched = 0;
+            memoryLock = false;
+            memoryWinEl.classList.remove('show');
+            updateMemoryStatus();
+            renderMemoryGrid();
+        }
+
+        function resetMemoryGame() {
+            playFlipSound();
+            startMemoryGame();
+        }
+
+        // ========== 猜數字邏輯 ==========
+        let guessTarget = 0;
+        let guessAttempts = 0;
+        let guessFinished = false;
+
+        const guessInput = document.getElementById('guessInput');
+        const guessHistory = document.getElementById('guessHistory');
+        const guessResult = document.getElementById('guessResult');
+        const guessResultTitle = document.getElementById('guessResultTitle');
+        const guessResultText = document.getElementById('guessResultText');
+        const guessInputRow = document.getElementById('guessInputRow');
+        const guessTip = document.getElementById('guessTip');
+
+        function resetGuessGame() {
+            guessTarget = Math.floor(Math.random() * 100) + 1;
+            guessAttempts = 0;
+            guessFinished = false;
+            guessHistory.innerHTML = '';
+            guessResult.classList.remove('show');
+            guessInputRow.style.display = 'flex';
+            guessTip.style.display = 'block';
+            guessInput.value = '';
+            guessInput.disabled = false;
+            guessInput.focus();
+        }
+
+        function submitGuess() {
+            if (guessFinished) return;
+            const raw = guessInput.value.trim();
+            if (raw === '') return;
+            const guess = Number(raw);
+            if (!Number.isInteger(guess) || guess < 1 || guess > 100) {
+                playWrongSound();
+                alert('請輸入 1 ~ 100 的整數喔！');
+                guessInput.value = '';
+                guessInput.focus();
+                return;
+            }
+
+            guessAttempts++;
+            let hintText = '';
+            let hintClass = '';
+            let isCorrect = false;
+
+            if (guess === guessTarget) {
+                hintText = '🎯 猜對了！';
+                hintClass = 'correct';
+                isCorrect = true;
+            } else if (guess > guessTarget) {
+                hintText = '📉 太大了，再小一點';
+                hintClass = 'too-high';
+            } else {
+                hintText = '📈 太小了，再大一點';
+                hintClass = 'too-low';
+            }
+
+            // 加入歷史紀錄
+            const item = document.createElement('div');
+            item.className = 'guess-item';
+            item.innerHTML = `<span class="num">${guess}</span><span class="hint ${hintClass}">${hintText}</span>`;
+            guessHistory.prepend(item);
+
+            guessInput.value = '';
+            guessInput.focus();
+
+            if (isCorrect) {
+                guessFinished = true;
+                playWinSound();
+                guessInputRow.style.display = 'none';
+                guessTip.style.display = 'none';
+                guessResultTitle.textContent = `🎉 太厲害了！答案是 ${guessTarget}`;
+                guessResultText.textContent = `你總共猜了 ${guessAttempts} 次就答對了！`;
+                guessResult.classList.add('show');
+                confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+                setTimeout(() => {
+                    confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
+                }, 300);
+            } else {
+                playWrongSound();
+            }
+        }
+
+        // 輸入框按 Enter 也能送出
+        guessInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitGuess();
+            }
+        });
+
+        // 初始化音效按鈕
+        updateSoundButtons();
+    </script>
+</body>
+</html>
