@@ -36,7 +36,6 @@
             position: relative;
             border: 6px solid #fff;
         }
-        /* 頂部標題 */
         .header {
             background: #ff7043;
             padding: 12px 20px;
@@ -65,7 +64,6 @@
             box-shadow: 0 2px 0 #ffa000;
         }
 
-        /* 遊戲大廳主要區域 */
         .lobby {
             flex: 1;
             padding: 20px 20px 30px;
@@ -94,7 +92,6 @@
             color: #6d4c41;
         }
 
-        /* 遊戲卡片 */
         .game-grid {
             display: flex;
             flex-direction: column;
@@ -154,10 +151,9 @@
             flex-shrink: 0;
         }
 
-        /* 通用隱藏 */
         .hidden { display: none !important; }
 
-        /* ---------- 畫板遊戲介面 ---------- */
+        /* 畫板介面 */
         .paint-app {
             flex: 1;
             display: flex;
@@ -178,17 +174,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-        .paint-header .sound-btn {
-            background: #ffca28;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            color: #d84315;
-            box-shadow: 0 2px 0 #ffa000;
         }
         .back-btn {
             background: #ffca28;
@@ -267,7 +252,7 @@
             box-shadow: 0 4px 0 #1967d2;
         }
 
-        /* ---------- 翻牌遊戲介面 ---------- */
+        /* 翻牌介面 */
         .memory-app {
             flex: 1;
             display: flex;
@@ -397,7 +382,186 @@
             display: block;
         }
 
-        /* 開始遮罩（暱稱輸入） */
+        /* ---------- 猜數字介面 ---------- */
+        .guess-app {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .guess-header {
+            background: #00897b;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .guess-header .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .guess-header .back-btn {
+            background: #80cbc4;
+            box-shadow: 0 2px 0 #00695c;
+        }
+        .guess-content {
+            flex: 1;
+            padding: 20px;
+            background: linear-gradient(180deg, #e0f2f1, #b2dfdb);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            overflow-y: auto;
+        }
+        .guess-tip {
+            background: #fff;
+            border-radius: 18px;
+            padding: 14px 20px;
+            font-size: 15px;
+            color: #00695c;
+            text-align: center;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+            line-height: 1.5;
+            width: 100%;
+            max-width: 380px;
+        }
+        .guess-tip strong {
+            color: #d84315;
+        }
+        .guess-input-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            align-items: center;
+        }
+        .guess-input-row input {
+            flex: 1;
+            padding: 14px;
+            font-size: 24px;
+            text-align: center;
+            border: 3px solid #4db6ac;
+            border-radius: 16px;
+            outline: none;
+            font-weight: bold;
+            color: #00695c;
+            min-width: 0;
+        }
+        .guess-input-row input:focus {
+            border-color: #00897b;
+        }
+        .guess-submit {
+            background: #00897b;
+            color: #fff;
+            border: none;
+            padding: 14px 22px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #004d40;
+            flex-shrink: 0;
+        }
+        .guess-submit:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #004d40;
+        }
+        .guess-history {
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+        .guess-item {
+            background: #fff;
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.06);
+            animation: slideIn 0.25s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .guess-item .num {
+            font-weight: bold;
+            font-size: 18px;
+            color: #00695c;
+        }
+        .guess-item .hint {
+            font-weight: bold;
+        }
+        .guess-item .hint.too-high { color: #e53935; }
+        .guess-item .hint.too-low { color: #1e88e5; }
+        .guess-item .hint.correct { color: #43a047; }
+        .guess-result {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.08);
+            display: none;
+        }
+        .guess-result.show {
+            display: block;
+        }
+        .guess-result .big-emoji {
+            font-size: 56px;
+            margin-bottom: 6px;
+        }
+        .guess-result h3 {
+            margin: 0 0 8px;
+            color: #00695c;
+            font-size: 22px;
+        }
+        .guess-result p {
+            margin: 0 0 14px;
+            color: #666;
+            font-size: 15px;
+        }
+        .guess-result button {
+            background: #00897b;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 17px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #004d40;
+        }
+        .guess-actions {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            max-width: 380px;
+        }
+        .guess-actions .action-btn {
+            flex: 1;
+            font-size: 15px;
+            padding: 12px 0;
+        }
+        .guess-actions .action-btn.reset {
+            background: #00897b;
+            box-shadow: 0 4px 0 #004d40;
+        }
+
+        /* 遮罩 */
         .welcome-overlay {
             position: absolute;
             top: 0; left: 0;
@@ -482,14 +646,14 @@
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
-                    <!-- 預留擴充 -->
-                    <div class="game-card" style="opacity: 0.6; pointer-events: none; border-color: #ddd;">
+                    <!-- 猜數字 -->
+                    <div class="game-card" onclick="launchGame('guess')">
                         <div class="game-icon">🔢</div>
                         <div class="game-info">
                             <h3>猜數字</h3>
-                            <p>猜猜看我想的數字是多少？即將推出！</p>
+                            <p>猜猜看我想的數字是多少？挑戰你的直覺！</p>
                         </div>
-                        <div class="play-badge" style="background: #bdbdbd; box-shadow: 0 3px 0 #9e9e9e;">敬請期待</div>
+                        <div class="play-badge">開始玩</div>
                     </div>
                 </div>
             </div>
@@ -546,7 +710,39 @@
             </div>
         </div>
 
-        <!-- 進入畫面遮罩（暱稱輸入） -->
+        <!-- 猜數字遊戲視圖 -->
+        <div id="guessView" class="guess-app hidden">
+            <div class="guess-header">
+                <div class="header-title">
+                    <span>🔢</span> <span id="guess-user-display">猜數字</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-guess" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="guess-content">
+                <div class="guess-tip" id="guessTip">
+                    我想了一個 <strong>1 ~ 100</strong> 的數字，<br>快來猜猜看是什麼！
+                </div>
+                <div class="guess-input-row" id="guessInputRow">
+                    <input type="number" id="guessInput" placeholder="?" min="1" max="100" inputmode="numeric">
+                    <button class="guess-submit" onclick="submitGuess()">猜！</button>
+                </div>
+                <div class="guess-history" id="guessHistory"></div>
+                <div class="guess-result" id="guessResult">
+                    <div class="big-emoji">🎉</div>
+                    <h3 id="guessResultTitle">猜對了！</h3>
+                    <p id="guessResultText"></p>
+                    <button onclick="resetGuessGame()">再玩一次</button>
+                </div>
+                <div class="guess-actions">
+                    <button class="action-btn reset" onclick="resetGuessGame()">🔄 重新開始</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 進入遮罩 -->
         <div id="welcome-overlay" class="welcome-overlay">
             <div class="welcome-card">
                 <h2>✨ 遊戲樂園 ✨</h2>
@@ -575,12 +771,10 @@
 
         function updateSoundButtons() {
             const label = soundEnabled ? '🔊 音效: 開' : '🔇 音效: 關';
-            const btnLobby = document.getElementById('sound-toggle-btn-lobby');
-            const btnPaint = document.getElementById('sound-toggle-btn-paint');
-            const btnMemory = document.getElementById('sound-toggle-btn-memory');
-            if (btnLobby) btnLobby.innerText = label;
-            if (btnPaint) btnPaint.innerText = label;
-            if (btnMemory) btnMemory.innerText = label;
+            ['sound-toggle-btn-lobby','sound-toggle-btn-paint','sound-toggle-btn-memory','sound-toggle-btn-guess'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.innerText = label;
+            });
         }
 
         function toggleSound() {
@@ -607,7 +801,6 @@
             } catch (e) {}
         }
 
-        // 翻牌音效（短促上揚聲）
         function playFlipSound() {
             if (!soundEnabled) return;
             initAudio();
@@ -628,7 +821,6 @@
             } catch (e) {}
         }
 
-        // 配對成功音效（雙音）
         function playMatchSound() {
             if (!soundEnabled) return;
             initAudio();
@@ -650,24 +842,69 @@
             } catch (e) {}
         }
 
+        // 猜測錯誤音效（低沉）
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } catch (e) {}
+        }
+
+        // 猜對音效（上行琶音）
+        function playWinSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                [523, 659, 784, 1047].forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(freq, now + i * 0.12);
+                    gain.gain.setValueAtTime(0.15, now + i * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.12 + 0.25);
+                    osc.start(now + i * 0.12);
+                    osc.stop(now + i * 0.12 + 0.25);
+                });
+            } catch (e) {}
+        }
+
         // ========== 視圖切換 ==========
         const lobbyView = document.getElementById('lobbyView');
         const paintView = document.getElementById('paintView');
         const memoryView = document.getElementById('memoryView');
+        const guessView = document.getElementById('guessView');
         const welcomeOverlay = document.getElementById('welcome-overlay');
 
         function showLobby() {
             lobbyView.classList.remove('hidden');
             paintView.classList.add('hidden');
             memoryView.classList.add('hidden');
+            guessView.classList.add('hidden');
             document.getElementById('lobby-username').innerText = currentPlayerName;
         }
 
         function launchGame(gameId) {
-            // 先隱藏所有視圖
             lobbyView.classList.add('hidden');
             paintView.classList.add('hidden');
             memoryView.classList.add('hidden');
+            guessView.classList.add('hidden');
 
             if (gameId === 'paint') {
                 paintView.classList.remove('hidden');
@@ -679,37 +916,38 @@
                 document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
                 initAudio();
                 startMemoryGame();
+            } else if (gameId === 'guess') {
+                guessView.classList.remove('hidden');
+                document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
+                initAudio();
+                resetGuessGame();
             }
         }
 
         function goBackToLobby() {
-            isDrawing = false; // 停止畫畫
-            // 停止翻牌計時器（如果有的話）
-            if (memoryFlipTimer) clearTimeout(memoryFlipTimer);
+            isDrawing = false;
+            if (memoryFlipTimer) { clearTimeout(memoryFlipTimer); memoryFlipTimer = null; }
             showLobby();
         }
 
-        // ========== 暱稱輸入 & 進入大廳 ==========
+        // ========== 暱稱輸入 ==========
         const startBtn = document.getElementById('start-btn');
-
         function handleStart(e) {
             e.preventDefault();
             initAudio();
             const nameInput = document.getElementById('player-name');
-            const name = nameInput ? nameInput.value.trim() : '小寶貝';
-            currentPlayerName = name || '小寶貝';
-
+            currentPlayerName = (nameInput ? nameInput.value.trim() : '') || '小寶貝';
             welcomeOverlay.classList.add('hidden');
             showLobby();
             document.getElementById('user-display').innerText = `畫家：${currentPlayerName}`;
             document.getElementById('lobby-username').innerText = currentPlayerName;
             document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
+            document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
         }
-
         startBtn.addEventListener('click', handleStart);
         startBtn.addEventListener('touchend', handleStart);
 
-        // ========== 畫板相關邏輯 ==========
+        // ========== 畫板邏輯 ==========
         const canvas = document.getElementById('paintCanvas');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -730,232 +968,4 @@
             currentColor = color;
             ctx.strokeStyle = color;
             document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            if (e && e.target) e.target.classList.add('active');
-        }
-
-        function clearCanvas() {
-            if (confirm('確定要清空畫布重新開始嗎？')) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        function finishArt() {
-            playPopSound();
-            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-            alert('🎉 太棒了！這是一幅超棒的魔法藝術品！');
-        }
-
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: clientX - rect.left, y: clientY - rect.top };
-        }
-
-        canvas.addEventListener('mousedown', (e) => {
-            isDrawing = true;
-            const pos = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isDrawing) return;
-            const pos = getPos(e);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            playPopSound();
-        });
-
-        window.addEventListener('mouseup', () => { isDrawing = false; });
-
-        canvas.addEventListener('touchstart', (e) => {
-            isDrawing = true;
-            const pos = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-            e.preventDefault();
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if (!isDrawing) return;
-            const pos = getPos(e);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            playPopSound();
-            e.preventDefault();
-        }, { passive: false });
-
-        window.addEventListener('touchend', () => { isDrawing = false; });
-
-        window.addEventListener('resize', () => {
-            if (!paintView.classList.contains('hidden')) {
-                resizeCanvas();
-            }
-        });
-
-        // ========== 記憶翻牌遊戲邏輯 ==========
-        const EMOJIS = ['🐶', '🐱', '🐼', '🦊', '🐸', '🐵', '🦄', '🐷']; // 8 對
-        const TOTAL_PAIRS = EMOJIS.length;
-
-        let memoryDeck = [];          // 牌組 [{emoji, id}]
-        let memoryFlipped = [];        // 目前翻開的卡片 id（最多 2 張）
-        let memoryMatched = 0;         // 已配對組數
-        let memoryLock = false;        // 防止連點
-        let memoryFlipTimer = null;    // 翻回計時器
-
-        const memoryGridEl = document.getElementById('memoryGrid');
-        const memoryStatusEl = document.getElementById('memoryStatus');
-        const memoryWinEl = document.getElementById('memoryWin');
-
-        // 洗牌
-        function shuffle(arr) {
-            const a = arr.slice();
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
-
-        // 初始化牌組
-        function createDeck() {
-            let deck = [];
-            EMOJIS.forEach((emoji, index) => {
-                deck.push({ emoji, pairId: index, id: deck.length });
-                deck.push({ emoji, pairId: index, id: deck.length });
-            });
-            return shuffle(deck);
-        }
-
-        // 渲染卡片
-        function renderMemoryGrid() {
-            memoryGridEl.innerHTML = '';
-            memoryDeck.forEach((card, idx) => {
-                const cardEl = document.createElement('div');
-                cardEl.className = 'card';
-                cardEl.dataset.cardId = card.id;
-                cardEl.dataset.pairId = card.pairId;
-
-                const inner = document.createElement('div');
-                inner.className = 'card-inner';
-
-                const front = document.createElement('div');
-                front.className = 'card-front';
-                front.textContent = '❓';
-
-                const back = document.createElement('div');
-                back.className = 'card-back';
-                back.textContent = card.emoji;
-
-                inner.appendChild(front);
-                inner.appendChild(back);
-                cardEl.appendChild(inner);
-
-                cardEl.addEventListener('click', () => handleCardClick(cardEl));
-                memoryGridEl.appendChild(cardEl);
-            });
-        }
-
-        // 處理卡片點擊
-        function handleCardClick(cardEl) {
-            if (memoryLock) return;
-            if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
-            if (memoryFlipped.length >= 2) return;
-
-            // 翻牌
-            cardEl.classList.add('flipped');
-            playFlipSound();
-            memoryFlipped.push(cardEl);
-
-            // 檢查是否翻開兩張
-            if (memoryFlipped.length === 2) {
-                checkMatch();
-            }
-        }
-
-        // 檢查配對
-        function checkMatch() {
-            const [card1, card2] = memoryFlipped;
-            const pair1 = card1.dataset.pairId;
-            const pair2 = card2.dataset.pairId;
-
-            if (pair1 === pair2) {
-                // 配對成功
-                setTimeout(() => {
-                    card1.classList.add('matched');
-                    card2.classList.add('matched');
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
-                    memoryMatched++;
-                    updateMemoryStatus();
-                    playMatchSound();
-                    memoryFlipped = [];
-                    memoryLock = false;
-
-                    // 檢查勝利
-                    if (memoryMatched === TOTAL_PAIRS) {
-                        winMemoryGame();
-                    }
-                }, 350);
-                memoryLock = true;
-            } else {
-                // 配對失敗，延遲翻回
-                memoryLock = true;
-                memoryFlipTimer = setTimeout(() => {
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
-                    memoryFlipped = [];
-                    memoryLock = false;
-                    memoryFlipTimer = null;
-                }, 900);
-            }
-        }
-
-        // 更新狀態文字
-        function updateMemoryStatus() {
-            memoryStatusEl.innerText = `找到 ${memoryMatched} / ${TOTAL_PAIRS} 組配對`;
-        }
-
-        // 勝利
-        function winMemoryGame() {
-            memoryWinEl.classList.add('show');
-            playMatchSound();
-            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
-            setTimeout(() => {
-                confetti({ particleCount: 100, spread: 120, origin: { y: 0.4 } });
-            }, 300);
-        }
-
-        // 開始 / 重置記憶遊戲
-        function startMemoryGame() {
-            // 清除計時器
-            if (memoryFlipTimer) {
-                clearTimeout(memoryFlipTimer);
-                memoryFlipTimer = null;
-            }
-            // 重置狀態
-            memoryDeck = createDeck();
-            memoryFlipped = [];
-            memoryMatched = 0;
-            memoryLock = false;
-            memoryWinEl.classList.remove('show');
-            updateMemoryStatus();
-            renderMemoryGrid();
-        }
-
-        // 重置按鈕
-        function resetMemoryGame() {
-            playFlipSound();
-            startMemoryGame();
-        }
-
-        // 視窗大小改變時，畫布重繪（僅在畫板開啟時）
-        // 初始化音效按鈕狀態
-        updateSoundButtons();
-
-        // 頁面載入完成後，如果已跳過遮罩（例如直接進入），確保大廳顯示正常
-        // 但預設遮罩會顯示，所以不用特別處理
-    </script>
-</body>
-</html>
+            if (e && e.target) e.target.classList
