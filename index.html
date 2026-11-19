@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>神奇魔法畫板 - 兒童創意塗鴉</title>
-    <!-- 引入彩帶特效庫 -->
+    <title>遊戲大廳 - 兒童創意樂園</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         * {
@@ -15,7 +14,7 @@
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
             font-family: 'Comic Sans MS', 'Microsoft JhengHei', sans-serif;
             display: flex;
             justify-content: center;
@@ -37,7 +36,7 @@
             position: relative;
             border: 6px solid #fff;
         }
-        /* 頂部標題與工具列 */
+        /* 頂部標題 */
         .header {
             background: #ff7043;
             padding: 12px 20px;
@@ -47,6 +46,7 @@
             color: #fff;
             font-size: 18px;
             font-weight: bold;
+            flex-shrink: 0;
         }
         .header-title {
             display: flex;
@@ -64,7 +64,152 @@
             color: #d84315;
             box-shadow: 0 2px 0 #ffa000;
         }
-        /* 畫布區域 */
+
+        /* 遊戲大廳主要區域 */
+        .lobby {
+            flex: 1;
+            padding: 20px 20px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow-y: auto;
+            background: #f9fbe7;
+        }
+        .welcome-banner {
+            background: linear-gradient(135deg, #ffd54f, #ffb300);
+            border-radius: 20px;
+            padding: 18px 20px;
+            text-align: center;
+            color: #5d4037;
+            box-shadow: 0 6px 0 #ff8f00;
+            border: 3px solid #fff;
+        }
+        .welcome-banner h2 {
+            margin: 0 0 6px;
+            font-size: 22px;
+        }
+        .welcome-banner p {
+            margin: 0;
+            font-size: 14px;
+            color: #6d4c41;
+        }
+
+        /* 遊戲卡片 */
+        .game-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .game-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.08);
+            border: 3px solid #ffe082;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .game-card:active {
+            transform: translateY(3px);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+        }
+        .game-icon {
+            font-size: 44px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff3e0;
+            border-radius: 18px;
+            flex-shrink: 0;
+            border: 2px dashed #ffb74d;
+        }
+        .game-info {
+            flex: 1;
+            text-align: left;
+        }
+        .game-info h3 {
+            margin: 0 0 4px;
+            font-size: 19px;
+            color: #333;
+        }
+        .game-info p {
+            margin: 0;
+            font-size: 13px;
+            color: #888;
+            line-height: 1.4;
+        }
+        .play-badge {
+            background: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #388e3c;
+            flex-shrink: 0;
+        }
+        .coming-soon {
+            opacity: 0.6;
+            pointer-events: none;
+            border-color: #ddd;
+        }
+        .coming-soon .play-badge {
+            background: #bdbdbd;
+            box-shadow: 0 3px 0 #9e9e9e;
+        }
+
+        /* 通用隱藏 */
+        .hidden { display: none !important; }
+
+        /* ---------- 畫板遊戲介面（沿用原有結構，但隱藏直到進入） ---------- */
+        .paint-app {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .paint-header {
+            background: #ff7043;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .paint-header .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .paint-header .sound-btn {
+            background: #ffca28;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #d84315;
+            box-shadow: 0 2px 0 #ffa000;
+        }
+        .back-btn {
+            background: #ffca28;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #d84315;
+            box-shadow: 0 2px 0 #ffa000;
+        }
         .canvas-area {
             flex: 1;
             background: #111122;
@@ -72,13 +217,12 @@
             cursor: crosshair;
             overflow: hidden;
         }
-        canvas {
+        .canvas-area canvas {
             display: block;
             width: 100%;
             height: 100%;
             touch-action: none;
         }
-        /* 底部色彩與工具列 */
         .toolbar {
             background: #fff8e1;
             padding: 12px 15px;
@@ -131,7 +275,8 @@
             background: #4285F4;
             box-shadow: 0 4px 0 #1967d2;
         }
-        /* 歡迎遮罩 */
+
+        /* 開始遮罩（暱稱輸入） */
         .welcome-overlay {
             position: absolute;
             top: 0; left: 0;
@@ -155,6 +300,9 @@
             max-width: 400px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
+        .welcome-card h2 {
+            margin-top: 0;
+        }
         .welcome-card input {
             width: 100%;
             padding: 12px;
@@ -176,70 +324,107 @@
             width: 100%;
             box-shadow: 0 5px 0 #d84315;
         }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- 頂部列 -->
-        <div class="header">
-            <div class="header-title">
-                <span>🎨</span> <span id="user-display">神奇魔法畫板</span>
+    <div class="app-container" id="appContainer">
+        <!-- 大廳視圖 -->
+        <div id="lobbyView" class="lobby-view" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+            <!-- 大廳頂部 -->
+            <div class="header">
+                <div class="header-title">
+                    <span>🎮</span> <span>遊戲大廳</span>
+                </div>
+                <button class="sound-btn" id="sound-toggle-btn-lobby" onclick="toggleSound()">🔊 音效: 開</button>
             </div>
-            <button class="sound-btn" id="sound-toggle-btn" onclick="toggleSound()">🔊 音效: 開</button>
+            <!-- 大廳內容 -->
+            <div class="lobby">
+                <div class="welcome-banner">
+                    <h2>👋 歡迎，<span id="lobby-username">小寶貝</span>！</h2>
+                    <p>請選擇想玩的遊戲，更多遊戲陸續新增中 ✨</p>
+                </div>
+                <div class="game-grid" id="gameGrid">
+                    <!-- 遊戲卡片：魔法畫板 -->
+                    <div class="game-card" onclick="launchGame('paint')">
+                        <div class="game-icon">🎨</div>
+                        <div class="game-info">
+                            <h3>神奇魔法畫板</h3>
+                            <p>用手指或滑鼠自由塗鴉，繽紛色彩好好玩！</p>
+                        </div>
+                        <div class="play-badge">開始玩</div>
+                    </div>
+                    <!-- 擴充區：複製上方卡片並修改 onclick 與內容即可新增遊戲 -->
+                    <!-- 範例：記憶翻牌（預留） -->
+                    <div class="game-card coming-soon">
+                        <div class="game-icon">🃏</div>
+                        <div class="game-info">
+                            <h3>記憶翻牌</h3>
+                            <p>翻開卡片，找出配對！敬請期待～</p>
+                        </div>
+                        <div class="play-badge">敬請期待</div>
+                    </div>
+                    <!-- 範例：猜數字（預留） -->
+                    <div class="game-card coming-soon">
+                        <div class="game-icon">🔢</div>
+                        <div class="game-info">
+                            <h3>猜數字</h3>
+                            <p>猜猜看我想的數字是多少？即將推出！</p>
+                        </div>
+                        <div class="play-badge">敬請期待</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- 畫布區域 -->
-        <div class="canvas-area" id="canvas-area">
-            <canvas id="paintCanvas"></canvas>
+        <!-- 畫板遊戲視圖（預設隱藏） -->
+        <div id="paintView" class="paint-app hidden">
+            <div class="paint-header">
+                <div class="header-title">
+                    <span>🎨</span> <span id="user-display">神奇魔法畫板</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-paint" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="canvas-area" id="canvas-area">
+                <canvas id="paintCanvas"></canvas>
+            </div>
+            <div class="toolbar">
+                <div class="palette">
+                    <div class="color-btn active" style="background: #ff5252;" onclick="setColor('#ff5252', event)"></div>
+                    <div class="color-btn" style="background: #ffeb3b;" onclick="setColor('#ffeb3b', event)"></div>
+                    <div class="color-btn" style="background: #69f0ae;" onclick="setColor('#69f0ae', event)"></div>
+                    <div class="color-btn" style="background: #40c4ff;" onclick="setColor('#40c4ff', event)"></div>
+                    <div class="color-btn" style="background: #e040fb;" onclick="setColor('#e040fb', event)"></div>
+                    <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff', event)"></div>
+                </div>
+                <div class="tools-row">
+                    <button class="action-btn clear" onclick="clearCanvas()">🗑️ 全部清除</button>
+                    <button class="action-btn save" onclick="finishArt()">✨ 完成作品！</button>
+                </div>
+            </div>
         </div>
 
-        <!-- 底部色彩與工具列 -->
-        <div class="toolbar">
-            <div class="palette">
-                <div class="color-btn active" style="background: #ff5252;" onclick="setColor('#ff5252')"></div>
-                <div class="color-btn" style="background: #ffeb3b;" onclick="setColor('#ffeb3b')"></div>
-                <div class="color-btn" style="background: #69f0ae;" onclick="setColor('#69f0ae')"></div>
-                <div class="color-btn" style="background: #40c4ff;" onclick="setColor('#40c4ff')"></div>
-                <div class="color-btn" style="background: #e040fb;" onclick="setColor('#e040fb')"></div>
-                <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff')"></div>
-            </div>
-            <div class="tools-row">
-                <button class="action-btn clear" onclick="clearCanvas()">🗑️ 全部清除</button>
-                <button class="action-btn save" onclick="finishArt()">✨ 完成作品！</button>
-            </div>
-        </div>
-
-        <!-- 進入畫面遮罩 -->
+        <!-- 進入畫面遮罩（暱稱輸入） -->
         <div id="welcome-overlay" class="welcome-overlay">
             <div class="welcome-card">
-                <h2>✨ 神奇魔法畫板 ✨</h2>
-                <p style="color: #666; font-size: 15px;">請輸入小畫家的名字：</p>
-                <input type="text" id="painter-name" placeholder="請輸入名字..." value="小寶貝">
-                <button class="start-btn" id="start-btn">開始畫畫！</button>
+                <h2>✨ 遊戲樂園 ✨</h2>
+                <p style="color: #666; font-size: 15px;">請輸入你的小名：</p>
+                <input type="text" id="player-name" placeholder="請輸入名字..." value="小寶貝">
+                <button class="start-btn" id="start-btn">進入遊戲大廳</button>
             </div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('paintCanvas');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
-        let currentColor = '#ff5252';
+        // ========== 全域狀態 ==========
+        let currentPlayerName = '小寶貝';
         let soundEnabled = true;
         let audioCtx = null;
 
-        function resizeCanvas() {
-            const container = document.getElementById('canvas-area');
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.lineWidth = 12;
-            ctx.strokeStyle = currentColor;
-        }
-
+        // ========== 音效控制 ==========
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -249,9 +434,17 @@
             }
         }
 
+        function updateSoundButtons() {
+            const label = soundEnabled ? '🔊 音效: 開' : '🔇 音效: 關';
+            const btnLobby = document.getElementById('sound-toggle-btn-lobby');
+            const btnPaint = document.getElementById('sound-toggle-btn-paint');
+            if (btnLobby) btnLobby.innerText = label;
+            if (btnPaint) btnPaint.innerText = label;
+        }
+
         function toggleSound() {
             soundEnabled = !soundEnabled;
-            document.getElementById('sound-toggle-btn').innerText = soundEnabled ? "🔊 音效: 開" : "🔇 音效: 關";
+            updateSoundButtons();
             if (soundEnabled) initAudio();
         }
 
@@ -268,33 +461,90 @@
                 osc.frequency.setValueAtTime(300 + Math.random() * 400, now);
                 gain.gain.setValueAtTime(0.1, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
             } catch (e) {}
         }
 
-        // 綁定「開始畫畫」按鈕事件（同時支援點擊與手機觸控）
+        // ========== 視圖切換 ==========
+        const lobbyView = document.getElementById('lobbyView');
+        const paintView = document.getElementById('paintView');
+        const welcomeOverlay = document.getElementById('welcome-overlay');
+
+        function showLobby() {
+            lobbyView.classList.remove('hidden');
+            paintView.classList.add('hidden');
+            // 更新大廳歡迎詞
+            document.getElementById('lobby-username').innerText = currentPlayerName;
+        }
+
+        function launchGame(gameId) {
+            if (gameId === 'paint') {
+                lobbyView.classList.add('hidden');
+                paintView.classList.remove('hidden');
+                // 更新畫板標題顯示玩家名稱
+                document.getElementById('user-display').innerText = `畫家：${currentPlayerName}`;
+                // 初始化畫布尺寸
+                setTimeout(resizeCanvas, 60);
+                initAudio();
+            }
+            // 未來可擴充：else if (gameId === 'memory') { ... }
+        }
+
+        function goBackToLobby() {
+            // 可選：離開前停止畫畫狀態
+            isDrawing = false;
+            showLobby();
+        }
+
+        // ========== 暱稱輸入 & 進入大廳 ==========
         const startBtn = document.getElementById('start-btn');
+
         function handleStart(e) {
             e.preventDefault();
             initAudio();
-            const nameInput = document.getElementById('painter-name');
-            const name = nameInput ? nameInput.value.trim() : "小寶貝";
-            
-            document.getElementById('user-display').innerText = `畫家：${name || '小寶貝'}`;
-            document.getElementById('welcome-overlay').classList.add('hidden');
-            
-            // 延遲一下確保畫布尺寸抓取正確
-            setTimeout(resizeCanvas, 50);
+            const nameInput = document.getElementById('player-name');
+            const name = nameInput ? nameInput.value.trim() : '小寶貝';
+            currentPlayerName = name || '小寶貝';
+
+            // 隱藏遮罩
+            welcomeOverlay.classList.add('hidden');
+
+            // 顯示大廳
+            showLobby();
+
+            // 同步更新畫板標題（如果之後進入）
+            document.getElementById('user-display').innerText = `畫家：${currentPlayerName}`;
+            document.getElementById('lobby-username').innerText = currentPlayerName;
         }
 
         startBtn.addEventListener('click', handleStart);
         startBtn.addEventListener('touchend', handleStart);
 
-        function setColor(color) {
+        // ========== 畫板相關邏輯（沿用） ==========
+        const canvas = document.getElementById('paintCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let currentColor = '#ff5252';
+
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-area');
+            if (!container || container.clientWidth === 0) return;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 12;
+            ctx.strokeStyle = currentColor;
+        }
+
+        function setColor(color, e) {
             currentColor = color;
             ctx.strokeStyle = color;
             document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (e && e.target) {
+                e.target.classList.add('active');
+            }
         }
 
         function clearCanvas() {
@@ -323,6 +573,7 @@
             };
         }
 
+        // 畫布事件（滑鼠）
         canvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
             const pos = getPos(e);
@@ -340,6 +591,7 @@
 
         window.addEventListener('mouseup', () => { isDrawing = false; });
 
+        // 畫布事件（觸控）
         canvas.addEventListener('touchstart', (e) => {
             isDrawing = true;
             const pos = getPos(e);
@@ -358,6 +610,19 @@
         }, { passive: false });
 
         window.addEventListener('touchend', () => { isDrawing = false; });
+
+        // 視窗縮放時重新調整畫布
+        window.addEventListener('resize', () => {
+            if (!paintView.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        });
+
+        // 初始音效按鈕狀態
+        updateSoundButtons();
+
+        // 如果畫布還沒初始化，先給預設尺寸（但等進入再resize也可）
+        // 保險：進入畫板時 resizeCanvas 已呼叫
     </script>
 </body>
 </html>
