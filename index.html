@@ -153,20 +153,11 @@
             box-shadow: 0 3px 0 #388e3c;
             flex-shrink: 0;
         }
-        .coming-soon {
-            opacity: 0.6;
-            pointer-events: none;
-            border-color: #ddd;
-        }
-        .coming-soon .play-badge {
-            background: #bdbdbd;
-            box-shadow: 0 3px 0 #9e9e9e;
-        }
 
         /* 通用隱藏 */
         .hidden { display: none !important; }
 
-        /* ---------- 畫板遊戲介面（沿用原有結構，但隱藏直到進入） ---------- */
+        /* ---------- 畫板遊戲介面 ---------- */
         .paint-app {
             flex: 1;
             display: flex;
@@ -276,6 +267,136 @@
             box-shadow: 0 4px 0 #1967d2;
         }
 
+        /* ---------- 翻牌遊戲介面 ---------- */
+        .memory-app {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .memory-header {
+            background: #7b1fa2;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .memory-header .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .memory-header .back-btn {
+            background: #ce93d8;
+            box-shadow: 0 2px 0 #8e24aa;
+        }
+        .memory-content {
+            flex: 1;
+            padding: 16px;
+            background: linear-gradient(180deg, #f3e5f5, #e1bee7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            overflow-y: auto;
+        }
+        .memory-status {
+            background: #fff;
+            border-radius: 20px;
+            padding: 10px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #6a1b9a;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 360px;
+        }
+        .card {
+            aspect-ratio: 1 / 1;
+            perspective: 600px;
+            cursor: pointer;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s;
+            transform-style: preserve-3d;
+            border-radius: 14px;
+        }
+        .card.flipped .card-inner,
+        .card.matched .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+        }
+        .card-front {
+            background: linear-gradient(135deg, #ba68c8, #7b1fa2);
+            color: #fff;
+            font-size: 40px;
+        }
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
+            border: 3px solid #ce93d8;
+        }
+        .card.matched .card-back {
+            background: #c8e6c9;
+            border-color: #81c784;
+        }
+        .memory-actions {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            max-width: 360px;
+        }
+        .memory-actions .action-btn {
+            flex: 1;
+            font-size: 15px;
+            padding: 10px 0;
+        }
+        .memory-actions .action-btn.reset {
+            background: #7b1fa2;
+            box-shadow: 0 4px 0 #4a148c;
+        }
+        .memory-win {
+            font-size: 18px;
+            font-weight: bold;
+            color: #6a1b9a;
+            text-align: center;
+            padding: 10px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 360px;
+            display: none;
+        }
+        .memory-win.show {
+            display: block;
+        }
+
         /* 開始遮罩（暱稱輸入） */
         .welcome-overlay {
             position: absolute;
@@ -331,21 +452,19 @@
     <div class="app-container" id="appContainer">
         <!-- 大廳視圖 -->
         <div id="lobbyView" class="lobby-view" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
-            <!-- 大廳頂部 -->
             <div class="header">
                 <div class="header-title">
                     <span>🎮</span> <span>遊戲大廳</span>
                 </div>
                 <button class="sound-btn" id="sound-toggle-btn-lobby" onclick="toggleSound()">🔊 音效: 開</button>
             </div>
-            <!-- 大廳內容 -->
             <div class="lobby">
                 <div class="welcome-banner">
                     <h2>👋 歡迎，<span id="lobby-username">小寶貝</span>！</h2>
                     <p>請選擇想玩的遊戲，更多遊戲陸續新增中 ✨</p>
                 </div>
                 <div class="game-grid" id="gameGrid">
-                    <!-- 遊戲卡片：魔法畫板 -->
+                    <!-- 魔法畫板 -->
                     <div class="game-card" onclick="launchGame('paint')">
                         <div class="game-icon">🎨</div>
                         <div class="game-info">
@@ -354,30 +473,29 @@
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
-                    <!-- 擴充區：複製上方卡片並修改 onclick 與內容即可新增遊戲 -->
-                    <!-- 範例：記憶翻牌（預留） -->
-                    <div class="game-card coming-soon">
+                    <!-- 記憶翻牌 -->
+                    <div class="game-card" onclick="launchGame('memory')">
                         <div class="game-icon">🃏</div>
                         <div class="game-info">
                             <h3>記憶翻牌</h3>
-                            <p>翻開卡片，找出配對！敬請期待～</p>
+                            <p>翻開卡片找出配對，訓練你的好記憶！</p>
                         </div>
-                        <div class="play-badge">敬請期待</div>
+                        <div class="play-badge">開始玩</div>
                     </div>
-                    <!-- 範例：猜數字（預留） -->
-                    <div class="game-card coming-soon">
+                    <!-- 預留擴充 -->
+                    <div class="game-card" style="opacity: 0.6; pointer-events: none; border-color: #ddd;">
                         <div class="game-icon">🔢</div>
                         <div class="game-info">
                             <h3>猜數字</h3>
                             <p>猜猜看我想的數字是多少？即將推出！</p>
                         </div>
-                        <div class="play-badge">敬請期待</div>
+                        <div class="play-badge" style="background: #bdbdbd; box-shadow: 0 3px 0 #9e9e9e;">敬請期待</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 畫板遊戲視圖（預設隱藏） -->
+        <!-- 畫板遊戲視圖 -->
         <div id="paintView" class="paint-app hidden">
             <div class="paint-header">
                 <div class="header-title">
@@ -403,6 +521,27 @@
                 <div class="tools-row">
                     <button class="action-btn clear" onclick="clearCanvas()">🗑️ 全部清除</button>
                     <button class="action-btn save" onclick="finishArt()">✨ 完成作品！</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 記憶翻牌遊戲視圖 -->
+        <div id="memoryView" class="memory-app hidden">
+            <div class="memory-header">
+                <div class="header-title">
+                    <span>🃏</span> <span id="memory-user-display">記憶翻牌</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-memory" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="memory-content">
+                <div class="memory-status" id="memoryStatus">找到 0 / 8 組配對</div>
+                <div class="memory-grid" id="memoryGrid"></div>
+                <div class="memory-win" id="memoryWin">🎉 全部配對成功！你太厲害了！</div>
+                <div class="memory-actions">
+                    <button class="action-btn reset" onclick="resetMemoryGame()">🔄 重新開始</button>
                 </div>
             </div>
         </div>
@@ -438,8 +577,10 @@
             const label = soundEnabled ? '🔊 音效: 開' : '🔇 音效: 關';
             const btnLobby = document.getElementById('sound-toggle-btn-lobby');
             const btnPaint = document.getElementById('sound-toggle-btn-paint');
+            const btnMemory = document.getElementById('sound-toggle-btn-memory');
             if (btnLobby) btnLobby.innerText = label;
             if (btnPaint) btnPaint.innerText = label;
+            if (btnMemory) btnMemory.innerText = label;
         }
 
         function toggleSound() {
@@ -466,34 +607,85 @@
             } catch (e) {}
         }
 
+        // 翻牌音效（短促上揚聲）
+        function playFlipSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.linearRampToValueAtTime(800, now + 0.08);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } catch (e) {}
+        }
+
+        // 配對成功音效（雙音）
+        function playMatchSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                [660, 880].forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                    gain.gain.setValueAtTime(0.15, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.15);
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.15);
+                });
+            } catch (e) {}
+        }
+
         // ========== 視圖切換 ==========
         const lobbyView = document.getElementById('lobbyView');
         const paintView = document.getElementById('paintView');
+        const memoryView = document.getElementById('memoryView');
         const welcomeOverlay = document.getElementById('welcome-overlay');
 
         function showLobby() {
             lobbyView.classList.remove('hidden');
             paintView.classList.add('hidden');
-            // 更新大廳歡迎詞
+            memoryView.classList.add('hidden');
             document.getElementById('lobby-username').innerText = currentPlayerName;
         }
 
         function launchGame(gameId) {
+            // 先隱藏所有視圖
+            lobbyView.classList.add('hidden');
+            paintView.classList.add('hidden');
+            memoryView.classList.add('hidden');
+
             if (gameId === 'paint') {
-                lobbyView.classList.add('hidden');
                 paintView.classList.remove('hidden');
-                // 更新畫板標題顯示玩家名稱
                 document.getElementById('user-display').innerText = `畫家：${currentPlayerName}`;
-                // 初始化畫布尺寸
                 setTimeout(resizeCanvas, 60);
                 initAudio();
+            } else if (gameId === 'memory') {
+                memoryView.classList.remove('hidden');
+                document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
+                initAudio();
+                startMemoryGame();
             }
-            // 未來可擴充：else if (gameId === 'memory') { ... }
         }
 
         function goBackToLobby() {
-            // 可選：離開前停止畫畫狀態
-            isDrawing = false;
+            isDrawing = false; // 停止畫畫
+            // 停止翻牌計時器（如果有的話）
+            if (memoryFlipTimer) clearTimeout(memoryFlipTimer);
             showLobby();
         }
 
@@ -507,21 +699,17 @@
             const name = nameInput ? nameInput.value.trim() : '小寶貝';
             currentPlayerName = name || '小寶貝';
 
-            // 隱藏遮罩
             welcomeOverlay.classList.add('hidden');
-
-            // 顯示大廳
             showLobby();
-
-            // 同步更新畫板標題（如果之後進入）
             document.getElementById('user-display').innerText = `畫家：${currentPlayerName}`;
             document.getElementById('lobby-username').innerText = currentPlayerName;
+            document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
         }
 
         startBtn.addEventListener('click', handleStart);
         startBtn.addEventListener('touchend', handleStart);
 
-        // ========== 畫板相關邏輯（沿用） ==========
+        // ========== 畫板相關邏輯 ==========
         const canvas = document.getElementById('paintCanvas');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -542,9 +730,7 @@
             currentColor = color;
             ctx.strokeStyle = color;
             document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            if (e && e.target) {
-                e.target.classList.add('active');
-            }
+            if (e && e.target) e.target.classList.add('active');
         }
 
         function clearCanvas() {
@@ -555,11 +741,7 @@
 
         function finishArt() {
             playPopSound();
-            confetti({
-                particleCount: 80,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
             alert('🎉 太棒了！這是一幅超棒的魔法藝術品！');
         }
 
@@ -567,13 +749,9 @@
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
+            return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
-        // 畫布事件（滑鼠）
         canvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
             const pos = getPos(e);
@@ -591,7 +769,6 @@
 
         window.addEventListener('mouseup', () => { isDrawing = false; });
 
-        // 畫布事件（觸控）
         canvas.addEventListener('touchstart', (e) => {
             isDrawing = true;
             const pos = getPos(e);
@@ -611,18 +788,174 @@
 
         window.addEventListener('touchend', () => { isDrawing = false; });
 
-        // 視窗縮放時重新調整畫布
         window.addEventListener('resize', () => {
             if (!paintView.classList.contains('hidden')) {
                 resizeCanvas();
             }
         });
 
-        // 初始音效按鈕狀態
+        // ========== 記憶翻牌遊戲邏輯 ==========
+        const EMOJIS = ['🐶', '🐱', '🐼', '🦊', '🐸', '🐵', '🦄', '🐷']; // 8 對
+        const TOTAL_PAIRS = EMOJIS.length;
+
+        let memoryDeck = [];          // 牌組 [{emoji, id}]
+        let memoryFlipped = [];        // 目前翻開的卡片 id（最多 2 張）
+        let memoryMatched = 0;         // 已配對組數
+        let memoryLock = false;        // 防止連點
+        let memoryFlipTimer = null;    // 翻回計時器
+
+        const memoryGridEl = document.getElementById('memoryGrid');
+        const memoryStatusEl = document.getElementById('memoryStatus');
+        const memoryWinEl = document.getElementById('memoryWin');
+
+        // 洗牌
+        function shuffle(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        // 初始化牌組
+        function createDeck() {
+            let deck = [];
+            EMOJIS.forEach((emoji, index) => {
+                deck.push({ emoji, pairId: index, id: deck.length });
+                deck.push({ emoji, pairId: index, id: deck.length });
+            });
+            return shuffle(deck);
+        }
+
+        // 渲染卡片
+        function renderMemoryGrid() {
+            memoryGridEl.innerHTML = '';
+            memoryDeck.forEach((card, idx) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.dataset.cardId = card.id;
+                cardEl.dataset.pairId = card.pairId;
+
+                const inner = document.createElement('div');
+                inner.className = 'card-inner';
+
+                const front = document.createElement('div');
+                front.className = 'card-front';
+                front.textContent = '❓';
+
+                const back = document.createElement('div');
+                back.className = 'card-back';
+                back.textContent = card.emoji;
+
+                inner.appendChild(front);
+                inner.appendChild(back);
+                cardEl.appendChild(inner);
+
+                cardEl.addEventListener('click', () => handleCardClick(cardEl));
+                memoryGridEl.appendChild(cardEl);
+            });
+        }
+
+        // 處理卡片點擊
+        function handleCardClick(cardEl) {
+            if (memoryLock) return;
+            if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+            if (memoryFlipped.length >= 2) return;
+
+            // 翻牌
+            cardEl.classList.add('flipped');
+            playFlipSound();
+            memoryFlipped.push(cardEl);
+
+            // 檢查是否翻開兩張
+            if (memoryFlipped.length === 2) {
+                checkMatch();
+            }
+        }
+
+        // 檢查配對
+        function checkMatch() {
+            const [card1, card2] = memoryFlipped;
+            const pair1 = card1.dataset.pairId;
+            const pair2 = card2.dataset.pairId;
+
+            if (pair1 === pair2) {
+                // 配對成功
+                setTimeout(() => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    memoryMatched++;
+                    updateMemoryStatus();
+                    playMatchSound();
+                    memoryFlipped = [];
+                    memoryLock = false;
+
+                    // 檢查勝利
+                    if (memoryMatched === TOTAL_PAIRS) {
+                        winMemoryGame();
+                    }
+                }, 350);
+                memoryLock = true;
+            } else {
+                // 配對失敗，延遲翻回
+                memoryLock = true;
+                memoryFlipTimer = setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    memoryFlipped = [];
+                    memoryLock = false;
+                    memoryFlipTimer = null;
+                }, 900);
+            }
+        }
+
+        // 更新狀態文字
+        function updateMemoryStatus() {
+            memoryStatusEl.innerText = `找到 ${memoryMatched} / ${TOTAL_PAIRS} 組配對`;
+        }
+
+        // 勝利
+        function winMemoryGame() {
+            memoryWinEl.classList.add('show');
+            playMatchSound();
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+            setTimeout(() => {
+                confetti({ particleCount: 100, spread: 120, origin: { y: 0.4 } });
+            }, 300);
+        }
+
+        // 開始 / 重置記憶遊戲
+        function startMemoryGame() {
+            // 清除計時器
+            if (memoryFlipTimer) {
+                clearTimeout(memoryFlipTimer);
+                memoryFlipTimer = null;
+            }
+            // 重置狀態
+            memoryDeck = createDeck();
+            memoryFlipped = [];
+            memoryMatched = 0;
+            memoryLock = false;
+            memoryWinEl.classList.remove('show');
+            updateMemoryStatus();
+            renderMemoryGrid();
+        }
+
+        // 重置按鈕
+        function resetMemoryGame() {
+            playFlipSound();
+            startMemoryGame();
+        }
+
+        // 視窗大小改變時，畫布重繪（僅在畫板開啟時）
+        // 初始化音效按鈕狀態
         updateSoundButtons();
 
-        // 如果畫布還沒初始化，先給預設尺寸（但等進入再resize也可）
-        // 保險：進入畫板時 resizeCanvas 已呼叫
+        // 頁面載入完成後，如果已跳過遮罩（例如直接進入），確保大廳顯示正常
+        // 但預設遮罩會顯示，所以不用特別處理
     </script>
 </body>
 </html>
