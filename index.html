@@ -153,7 +153,6 @@
 
         .hidden { display: none !important; }
 
-        /* 通用遊戲頁首 */
         .game-header {
             padding: 12px 20px;
             display: flex;
@@ -177,6 +176,17 @@
             font-size: 14px;
             font-weight: bold;
             color: #d84315;
+        }
+        .speak-btn {
+            background: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #d84315;
+            box-shadow: 0 2px 0 #ccc;
         }
 
         /* 畫板 */
@@ -348,7 +358,9 @@
                 <div class="header-title">
                     <span>🎮</span> <span>遊戲大廳</span>
                 </div>
-                <button class="sound-btn" id="sound-toggle-btn-lobby" onclick="toggleSound()">🔊 音效: 開</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="sound-btn" id="sound-toggle-btn-lobby" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
             </div>
             <div class="lobby">
                 <div class="welcome-banner">
@@ -391,6 +403,7 @@
                     <span>🎨</span> <span id="user-display">神奇魔法畫板</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
+                    <button class="speak-btn" onclick="speakGameIntro('paint')">🔊 玩法</button>
                     <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
                     <button class="sound-btn" id="sound-toggle-btn-paint" onclick="toggleSound()">🔊 音效: 開</button>
                 </div>
@@ -421,6 +434,7 @@
                     <span>🃏</span> <span id="memory-user-display">記憶翻牌</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
+                    <button class="speak-btn" onclick="speakGameIntro('memory')">🔊 玩法</button>
                     <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
                     <button class="sound-btn" id="sound-toggle-btn-memory" onclick="toggleSound()">🔊 音效: 開</button>
                 </div>
@@ -442,6 +456,7 @@
                     <span>🔢</span> <span id="guess-user-display">猜數字</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
+                    <button class="speak-btn" onclick="speakGameIntro('guess')">🔊 玩法</button>
                     <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
                     <button class="sound-btn" id="sound-toggle-btn-guess" onclick="toggleSound()">🔊 音效: 開</button>
                 </div>
@@ -481,8 +496,10 @@
     <script>
         // ========== 全域狀態 ==========
         let currentPlayerName = '小寶貝';
-        let soundEnabled = true;
+        let soundEnabled = true;      // 音效（遊戲音效）
+        let voiceEnabled = true;      // 語音（朗讀說明）
         let audioCtx = null;
+        let speechSynthesis = window.speechSynthesis || null;
 
         // ========== 音效控制 ==========
         function initAudio() {
@@ -508,6 +525,41 @@
             if (soundEnabled) initAudio();
         }
 
+        // ========== 語音朗讀 ==========
+        const GAME_INTROS = {
+            paint: '歡迎來到神奇魔法畫板！你可以用手指或滑鼠在畫布上自由塗鴉。下方有六種顏色可以選擇，畫錯了可以按全部清除。畫完後按完成作品，就會有彩帶慶祝喔！',
+            memory: '歡迎來到記憶翻牌！總共有十六張卡片，兩兩配對成八組。每次翻開兩張卡片，如果圖案相同就配對成功，如果不同就會翻回去。把所有八組都配對成功就贏了！',
+            guess: '歡迎來到猜數字！我想了一個一到一百之間的整數。你每次輸入一個數字，我會告訴你太大還是太小，直到你猜中為止。看看你總共需要猜幾次！'
+        };
+
+        function speakText(text, interrupt = true) {
+            if (!voiceEnabled || !speechSynthesis) return;
+            // 取消目前正在朗讀的內容
+            if (interrupt) {
+                speechSynthesis.cancel();
+            }
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'zh-TW';
+            utter.rate = 0.95;
+            utter.pitch = 1.1;
+            // 優先選擇中文語音
+            const voices = speechSynthesis.getVoices();
+            const zhVoice = voices.find(v => v.lang && v.lang.startsWith('zh'));
+            if (zhVoice) utter.voice = zhVoice;
+            speechSynthesis.speak(utter);
+        }
+
+        function speakGameIntro(gameId) {
+            const text = GAME_INTROS[gameId];
+            if (text) speakText(text);
+        }
+
+        // 語音清單載入完成（部分瀏覽器需要）
+        if (speechSynthesis) {
+            speechSynthesis.onvoiceschanged = () => {};
+        }
+
+        // ========== 遊戲音效 ==========
         function playPopSound() {
             if (!soundEnabled) return;
             initAudio();
@@ -634,22 +686,27 @@
                 document.getElementById('user-display').innerText = `畫家：${currentPlayerName}`;
                 setTimeout(resizeCanvas, 60);
                 initAudio();
+                setTimeout(() => speakGameIntro('paint'), 300);
             } else if (gameId === 'memory') {
                 memoryView.classList.remove('hidden');
                 document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
                 initAudio();
                 startMemoryGame();
+                setTimeout(() => speakGameIntro('memory'), 300);
             } else if (gameId === 'guess') {
                 guessView.classList.remove('hidden');
                 document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
                 initAudio();
                 resetGuessGame();
+                setTimeout(() => speakGameIntro('guess'), 300);
             }
         }
 
         function goBackToLobby() {
             isDrawing = false;
             if (memoryFlipTimer) { clearTimeout(memoryFlipTimer); memoryFlipTimer = null; }
+            // 停止語音朗讀
+            if (speechSynthesis) speechSynthesis.cancel();
             showLobby();
         }
 
@@ -666,6 +723,8 @@
             document.getElementById('lobby-username').innerText = currentPlayerName;
             document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
             document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
+            // 進入大廳時的語音歡迎
+            speakText(`歡迎 ${currentPlayerName} 來到遊戲樂園！請選擇想玩的遊戲。`);
         }
         startBtn.addEventListener('click', handleStart);
         startBtn.addEventListener('touchend', handleStart);
@@ -703,6 +762,7 @@
         function finishArt() {
             playPopSound();
             confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            speakText('太棒了！這是一幅超棒的魔法藝術品！');
             alert('🎉 太棒了！這是一幅超棒的魔法藝術品！');
         }
 
@@ -870,6 +930,7 @@
         function winMemoryGame() {
             memoryWinEl.classList.add('show');
             playMatchSound();
+            speakText('恭喜你！全部配對成功！你太厲害了！');
             confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
             setTimeout(() => {
                 confetti({ particleCount: 100, spread: 120, origin: { y: 0.4 } });
@@ -968,6 +1029,7 @@
                 guessResultTitle.textContent = `🎉 太厲害了！答案是 ${guessTarget}`;
                 guessResultText.textContent = `你總共猜了 ${guessAttempts} 次就答對了！`;
                 guessResult.classList.add('show');
+                speakText(`太厲害了！答案是 ${guessTarget}，你總共猜了 ${guessAttempts} 次就答對了！`);
                 confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
                 setTimeout(() => {
                     confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
