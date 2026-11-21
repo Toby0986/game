@@ -336,26 +336,32 @@
             display: flex; flex-direction: column; align-items: center; gap: 16px; overflow-y: auto;
         }
         .mult-score {
-            background: #fff; border-radius: 20px; padding: 10px 24px; font-size: 16px;
+            background: #fff; border-radius: 20px; padding: 10px 16px; font-size: 15px;
             font-weight: bold; color: #e65100; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
             text-align: center; width: 100%; max-width: 380px;
-            display: flex; justify-content: space-around;
+            display: flex; justify-content: space-between; gap: 6px;
         }
+        .mult-score span { white-space: nowrap; }
         .mult-question {
-            background: #fff; border-radius: 24px; padding: 28px 20px; text-align: center;
+            background: #fff; border-radius: 24px; padding: 24px 20px; text-align: center;
             width: 100%; max-width: 380px; box-shadow: 0 6px 0 rgba(0,0,0,0.08);
-            font-size: 42px; font-weight: bold; color: #4e342e;
+            font-size: 40px; font-weight: bold; color: #4e342e;
             border: 4px solid #ffb74d;
         }
         .mult-question .times { color: #e65100; }
         .mult-question .eq { color: #ffb74d; }
+        .mult-progress {
+            font-size: 14px; font-weight: bold; color: #bf360c;
+            background: #fff; border-radius: 20px; padding: 6px 16px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+        }
         .mult-options {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
             width: 100%; max-width: 380px;
         }
         .mult-option {
             background: #fff; border: 4px solid #ffb74d; border-radius: 18px;
-            padding: 18px 10px; font-size: 30px; font-weight: bold; color: #4e342e;
+            padding: 16px 10px; font-size: 28px; font-weight: bold; color: #4e342e;
             cursor: pointer; box-shadow: 0 5px 0 #e65100; transition: transform 0.1s;
         }
         .mult-option:active { transform: translateY(3px); box-shadow: 0 2px 0 #e65100; }
@@ -363,7 +369,7 @@
         .mult-option.wrong { background: #ffcdd2; border-color: #e53935; color: #b71c1c; box-shadow: 0 5px 0 #c62828; }
         .mult-option:disabled { cursor: default; opacity: 0.85; }
         .mult-feedback {
-            font-size: 20px; font-weight: bold; min-height: 30px; text-align: center;
+            font-size: 18px; font-weight: bold; min-height: 28px; text-align: center;
         }
         .mult-feedback.ok { color: #2e7d32; }
         .mult-feedback.no { color: #c62828; }
@@ -377,7 +383,7 @@
         .mult-win.show { display: block; }
         .mult-win .big-emoji { font-size: 56px; margin-bottom: 6px; }
         .mult-win h3 { margin: 0 0 8px; color: #e65100; font-size: 22px; }
-        .mult-win p { margin: 0 0 14px; color: #666; font-size: 15px; }
+        .mult-win p { margin: 0 0 14px; color: #666; font-size: 15px; line-height: 1.6; }
         .mult-win button {
             background: #f57c00; color: #fff; border: none; padding: 12px 30px;
             font-size: 17px; font-weight: bold; border-radius: 30px; cursor: pointer;
@@ -454,7 +460,7 @@
                         <div class="game-icon">✖️</div>
                         <div class="game-info">
                             <h3>九九乘法</h3>
-                            <p>選出正確的乘積，練習乘法表好有趣！</p>
+                            <p>50 關挑戰！每題 2 分，答錯倒扣 2 分。</p>
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
@@ -562,6 +568,8 @@
             </div>
             <div class="mult-content">
                 <div class="mult-score">
+                    <span>第 <span id="multRound">1</span> / 50 關</span>
+                    <span>得分：<span id="multScore">0</span></span>
                     <span>答對：<span id="multCorrect">0</span></span>
                     <span>答錯：<span id="multWrong">0</span></span>
                 </div>
@@ -630,7 +638,7 @@
             paint: '歡迎來到神奇魔法畫板！你可以用手指或滑鼠在畫布上自由塗鴉。下方有六種顏色可以選擇，畫錯了可以按全部清除。畫完後按完成作品，就會有彩帶慶祝喔！',
             memory: '歡迎來到記憶翻牌！總共有十六張卡片，兩兩配對成八組。每次翻開兩張卡片，如果圖案相同就配對成功，如果不同就會翻回去。把所有八組都配對成功就贏了！',
             guess: '歡迎來到猜數字！我想了一個一到一百之間的整數。你每次輸入一個數字，我會告訴你太大還是太小，直到你猜中為止。看看你總共需要猜幾次！',
-            mult: '歡迎來到九九乘法！畫面上會出現一個乘法算式，下方有四個選項，請選出正確的答案。答對會得分，答錯也會記錄次數。總共十題，看看你能答對幾題！'
+            mult: '歡迎來到九九乘法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的乘積，看看你最後能得到幾分！'
         };
 
         function speakText(text, interrupt = true) {
@@ -1152,11 +1160,14 @@
             }
         });
 
-        // ========== 九九乘法邏輯 ==========
-        const MULT_TOTAL = 10;
+        // ========== 九九乘法邏輯（50 關，每題 2 分，答錯倒扣 2 分） ==========
+        const MULT_TOTAL = 50;
+        const MULT_POINTS = 2;
+
+        let multScore = 0;
         let multCorrect = 0;
         let multWrong = 0;
-        let multCurrent = 0;       // 已出題數
+        let multCurrent = 0;
         let multAnswer = 0;
         let multLock = false;
         let multLockTimer = null;
@@ -1168,6 +1179,8 @@
         const multFeedbackEl = document.getElementById('multFeedback');
         const multCorrectEl = document.getElementById('multCorrect');
         const multWrongEl = document.getElementById('multWrong');
+        const multScoreEl = document.getElementById('multScore');
+        const multRoundEl = document.getElementById('multRound');
         const multWinEl = document.getElementById('multWin');
         const multWinTitle = document.getElementById('multWinTitle');
         const multWinText = document.getElementById('multWinText');
@@ -1175,17 +1188,21 @@
 
         function resetMultGame() {
             if (multLockTimer) { clearTimeout(multLockTimer); multLockTimer = null; }
+            multScore = 0;
             multCorrect = 0;
             multWrong = 0;
             multCurrent = 0;
             multLock = false;
             multFinished = false;
+            multScoreEl.innerText = '0';
             multCorrectEl.innerText = '0';
             multWrongEl.innerText = '0';
+            multRoundEl.innerText = '1';
             multFeedbackEl.innerText = '';
             multFeedbackEl.className = 'mult-feedback';
             multWinEl.classList.remove('show');
             multQuestionEl.style.display = 'block';
+            multOptionsEl.style.display = 'grid';
             nextMultQuestion();
         }
 
@@ -1195,6 +1212,7 @@
                 return;
             }
             multCurrent++;
+            multRoundEl.innerText = multCurrent;
             multLock = false;
 
             // 產生 2~9 的乘法（九九乘法範圍）
@@ -1208,7 +1226,6 @@
             // 產生四個選項（包含正解與三個不重複的干擾項）
             const options = new Set([multAnswer]);
             while (options.size < 4) {
-                // 干擾項在正解附近波動，範圍 4~81
                 let offset = (Math.floor(Math.random() * 5) + 1) * (Math.random() < 0.5 ? -1 : 1);
                 let fake = multAnswer + offset;
                 if (fake < 2 || fake > 90) continue;
@@ -1234,24 +1251,26 @@
             multLock = true;
 
             const isCorrect = val === multAnswer;
-            // 停用所有選項
             document.querySelectorAll('.mult-option').forEach(b => b.disabled = true);
 
             if (isCorrect) {
                 btn.classList.add('correct');
                 multCorrect++;
                 multCorrectEl.innerText = multCorrect;
-                multFeedbackEl.innerText = '✅ 答對了！太棒了！';
+                multScore += MULT_POINTS;
+                multScoreEl.innerText = multScore;
+                multFeedbackEl.innerText = `✅ 答對了！+${MULT_POINTS} 分`;
                 multFeedbackEl.className = 'mult-feedback ok';
                 playMatchSound();
             } else {
                 btn.classList.add('wrong');
                 multWrong++;
                 multWrongEl.innerText = multWrong;
-                multFeedbackEl.innerText = `❌ 答錯了，正確答案是 ${multAnswer}`;
+                multScore -= MULT_POINTS;
+                multScoreEl.innerText = multScore;
+                multFeedbackEl.innerText = `❌ 答錯了，正確答案是 ${multAnswer}，-${MULT_POINTS} 分`;
                 multFeedbackEl.className = 'mult-feedback no';
                 playWrongSound();
-                // 標示正確選項
                 document.querySelectorAll('.mult-option').forEach(b => {
                     if (Number(b.textContent) === multAnswer) {
                         b.classList.add('correct');
@@ -1268,21 +1287,24 @@
         function finishMultGame() {
             multFinished = true;
             multQuestionEl.style.display = 'none';
-            multOptionsEl.innerHTML = '';
+            multOptionsEl.style.display = 'none';
             multFeedbackEl.innerText = '';
-            multWinTitle.textContent = `🏆 完成！答對 ${multCorrect} 題，答錯 ${multWrong} 題`;
-            if (multWrong === 0) {
-                multWinText.textContent = '全部答對，你是乘法小天才！';
-            } else if (multCorrect >= 8) {
-                multWinText.textContent = '表現很棒，繼續加油！';
-            } else if (multCorrect >= 5) {
-                multWinText.textContent = '不錯喔，再練習會更厲害！';
+            multWinTitle.textContent = `🏆 完成 50 關！總得分：${multScore} 分`;
+            multWinText.innerHTML = `答對 ${multCorrect} 題，答錯 ${multWrong} 題。<br>
+                每題 ${MULT_POINTS} 分，答錯倒扣 ${MULT_POINTS} 分。<br>
+                滿分 ${MULT_TOTAL * MULT_POINTS} 分。`;
+            if (multScore === MULT_TOTAL * MULT_POINTS) {
+                multWinText.innerHTML += '<br>🌟 滿分！你是乘法小天才！';
+            } else if (multScore >= 80) {
+                multWinText.innerHTML += '<br>💪 表現很棒，繼續加油！';
+            } else if (multScore >= 50) {
+                multWinText.innerHTML += '<br>👍 不錯喔，再練習會更厲害！';
             } else {
-                multWinText.textContent = '別灰心，多練習幾次一定可以的！';
+                multWinText.innerHTML += '<br>😊 別灰心，多練習幾次一定可以的！';
             }
             multWinEl.classList.add('show');
             playWinSound();
-            speakText(`完成！你答對了 ${multCorrect} 題，答錯了 ${multWrong} 題。`);
+            speakText(`完成五十關！你總共得到 ${multScore} 分，答對 ${multCorrect} 題，答錯 ${multWrong} 題。`);
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
             setTimeout(() => {
                 confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
