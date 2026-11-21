@@ -350,11 +350,6 @@
         }
         .mult-question .times { color: #e65100; }
         .mult-question .eq { color: #ffb74d; }
-        .mult-progress {
-            font-size: 14px; font-weight: bold; color: #bf360c;
-            background: #fff; border-radius: 20px; padding: 6px 16px;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
-        }
         .mult-options {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
             width: 100%; max-width: 380px;
@@ -388,6 +383,65 @@
             background: #f57c00; color: #fff; border: none; padding: 12px 30px;
             font-size: 17px; font-weight: bold; border-radius: 30px; cursor: pointer;
             box-shadow: 0 4px 0 #bf360c;
+        }
+
+        /* 加減法（沿用九九乘法樣式，換色） */
+        .calc-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .calc-header { background: #3949ab; }
+        .calc-header .back-btn { background: #9fa8da; box-shadow: 0 2px 0 #283593; color: #1a237e; }
+        .calc-header .sound-btn { background: #9fa8da; box-shadow: 0 2px 0 #283593; color: #1a237e; }
+        .calc-content {
+            flex: 1; padding: 20px; background: linear-gradient(180deg, #e8eaf6, #c5cae9);
+            display: flex; flex-direction: column; align-items: center; gap: 16px; overflow-y: auto;
+        }
+        .calc-score {
+            background: #fff; border-radius: 20px; padding: 10px 16px; font-size: 15px;
+            font-weight: bold; color: #3949ab; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            text-align: center; width: 100%; max-width: 380px;
+            display: flex; justify-content: space-between; gap: 6px;
+        }
+        .calc-score span { white-space: nowrap; }
+        .calc-question {
+            background: #fff; border-radius: 24px; padding: 24px 20px; text-align: center;
+            width: 100%; max-width: 380px; box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+            font-size: 40px; font-weight: bold; color: #1a237e;
+            border: 4px solid #9fa8da;
+        }
+        .calc-question .op { color: #3949ab; }
+        .calc-question .eq { color: #9fa8da; }
+        .calc-options {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+            width: 100%; max-width: 380px;
+        }
+        .calc-option {
+            background: #fff; border: 4px solid #9fa8da; border-radius: 18px;
+            padding: 16px 10px; font-size: 28px; font-weight: bold; color: #1a237e;
+            cursor: pointer; box-shadow: 0 5px 0 #3949ab; transition: transform 0.1s;
+        }
+        .calc-option:active { transform: translateY(3px); box-shadow: 0 2px 0 #3949ab; }
+        .calc-option.correct { background: #c8e6c9; border-color: #43a047; color: #1b5e20; box-shadow: 0 5px 0 #2e7d32; }
+        .calc-option.wrong { background: #ffcdd2; border-color: #e53935; color: #b71c1c; box-shadow: 0 5px 0 #c62828; }
+        .calc-option:disabled { cursor: default; opacity: 0.85; }
+        .calc-feedback {
+            font-size: 18px; font-weight: bold; min-height: 28px; text-align: center;
+        }
+        .calc-feedback.ok { color: #2e7d32; }
+        .calc-feedback.no { color: #c62828; }
+        .calc-actions { display: flex; gap: 12px; width: 100%; max-width: 380px; }
+        .calc-actions .action-btn { flex: 1; font-size: 15px; padding: 12px 0; }
+        .calc-actions .action-btn.reset { background: #3949ab; box-shadow: 0 4px 0 #283593; }
+        .calc-win {
+            background: #fff; border-radius: 20px; padding: 20px; text-align: center;
+            width: 100%; max-width: 380px; box-shadow: 0 5px 0 rgba(0,0,0,0.08); display: none;
+        }
+        .calc-win.show { display: block; }
+        .calc-win .big-emoji { font-size: 56px; margin-bottom: 6px; }
+        .calc-win h3 { margin: 0 0 8px; color: #3949ab; font-size: 22px; }
+        .calc-win p { margin: 0 0 14px; color: #666; font-size: 15px; line-height: 1.6; }
+        .calc-win button {
+            background: #3949ab; color: #fff; border: none; padding: 12px 30px;
+            font-size: 17px; font-weight: bold; border-radius: 30px; cursor: pointer;
+            box-shadow: 0 4px 0 #283593;
         }
 
         /* 遮罩 */
@@ -460,6 +514,14 @@
                         <div class="game-icon">✖️</div>
                         <div class="game-info">
                             <h3>九九乘法</h3>
+                            <p>50 關挑戰！每題 2 分，答錯倒扣 2 分。</p>
+                        </div>
+                        <div class="play-badge">開始玩</div>
+                    </div>
+                    <div class="game-card" onclick="launchGame('calc')">
+                        <div class="game-icon">➕</div>
+                        <div class="game-info">
+                            <h3>加減法</h3>
                             <p>50 關挑戰！每題 2 分，答錯倒扣 2 分。</p>
                         </div>
                         <div class="play-badge">開始玩</div>
@@ -590,6 +652,42 @@
             </div>
         </div>
 
+        <!-- ========== 加減法視圖 ========== -->
+        <div id="calcView" class="calc-app hidden">
+            <div class="game-header calc-header">
+                <div class="header-title">
+                    <span>➕</span> <span id="calc-user-display">加減法</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="speak-btn" onclick="speakGameIntro('calc')">🔊 玩法</button>
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-calc" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="calc-content">
+                <div class="calc-score">
+                    <span>第 <span id="calcRound">1</span> / 50 關</span>
+                    <span>得分：<span id="calcScore">0</span></span>
+                    <span>答對：<span id="calcCorrect">0</span></span>
+                    <span>答錯：<span id="calcWrong">0</span></span>
+                </div>
+                <div class="calc-question" id="calcQuestion">
+                    <span id="calcA">12</span> <span class="op" id="calcOp">+</span> <span id="calcB">8</span> <span class="eq">=</span> <span>?</span>
+                </div>
+                <div class="calc-options" id="calcOptions"></div>
+                <div class="calc-feedback" id="calcFeedback"></div>
+                <div class="calc-win" id="calcWin">
+                    <div class="big-emoji">🏆</div>
+                    <h3 id="calcWinTitle">太厲害了！</h3>
+                    <p id="calcWinText"></p>
+                    <button onclick="resetCalcGame()">再玩一次</button>
+                </div>
+                <div class="calc-actions">
+                    <button class="action-btn reset" onclick="resetCalcGame()">🔄 重新開始</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ========== 進入遮罩 ========== -->
         <div id="welcome-overlay" class="welcome-overlay">
             <div class="welcome-card">
@@ -621,7 +719,7 @@
 
         function updateSoundButtons() {
             const label = soundEnabled ? '🔊 音效: 開' : '🔇 音效: 關';
-            ['sound-toggle-btn-lobby', 'sound-toggle-btn-paint', 'sound-toggle-btn-memory', 'sound-toggle-btn-guess', 'sound-toggle-btn-mult'].forEach(id => {
+            ['sound-toggle-btn-lobby', 'sound-toggle-btn-paint', 'sound-toggle-btn-memory', 'sound-toggle-btn-guess', 'sound-toggle-btn-mult', 'sound-toggle-btn-calc'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.innerText = label;
             });
@@ -638,7 +736,8 @@
             paint: '歡迎來到神奇魔法畫板！你可以用手指或滑鼠在畫布上自由塗鴉。下方有六種顏色可以選擇，畫錯了可以按全部清除。畫完後按完成作品，就會有彩帶慶祝喔！',
             memory: '歡迎來到記憶翻牌！總共有十六張卡片，兩兩配對成八組。每次翻開兩張卡片，如果圖案相同就配對成功，如果不同就會翻回去。把所有八組都配對成功就贏了！',
             guess: '歡迎來到猜數字！我想了一個一到一百之間的整數。你每次輸入一個數字，我會告訴你太大還是太小，直到你猜中為止。看看你總共需要猜幾次！',
-            mult: '歡迎來到九九乘法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的乘積，看看你最後能得到幾分！'
+            mult: '歡迎來到九九乘法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的乘積，看看你最後能得到幾分！',
+            calc: '歡迎來到加減法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的答案，看看你最後能得到幾分！'
         };
 
         function speakText(text, interrupt = true) {
@@ -772,6 +871,7 @@
         const memoryView = document.getElementById('memoryView');
         const guessView = document.getElementById('guessView');
         const multView = document.getElementById('multView');
+        const calcView = document.getElementById('calcView');
         const welcomeOverlay = document.getElementById('welcome-overlay');
 
         function showLobby() {
@@ -780,6 +880,7 @@
             memoryView.classList.add('hidden');
             guessView.classList.add('hidden');
             multView.classList.add('hidden');
+            calcView.classList.add('hidden');
             document.getElementById('lobby-username').innerText = currentPlayerName;
         }
 
@@ -789,6 +890,7 @@
             memoryView.classList.add('hidden');
             guessView.classList.add('hidden');
             multView.classList.add('hidden');
+            calcView.classList.add('hidden');
 
             if (gameId === 'paint') {
                 paintView.classList.remove('hidden');
@@ -814,6 +916,12 @@
                 initAudio();
                 resetMultGame();
                 setTimeout(() => speakGameIntro('mult'), 300);
+            } else if (gameId === 'calc') {
+                calcView.classList.remove('hidden');
+                document.getElementById('calc-user-display').innerText = `${currentPlayerName} 的加減法`;
+                initAudio();
+                resetCalcGame();
+                setTimeout(() => speakGameIntro('calc'), 300);
             }
         }
 
@@ -821,6 +929,7 @@
             isDrawing = false;
             if (memoryFlipTimer) { clearTimeout(memoryFlipTimer); memoryFlipTimer = null; }
             if (multLockTimer) { clearTimeout(multLockTimer); multLockTimer = null; }
+            if (calcLockTimer) { clearTimeout(calcLockTimer); calcLockTimer = null; }
             if (speechSynthesis) speechSynthesis.cancel();
             showLobby();
         }
@@ -839,6 +948,7 @@
             document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
             document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
             document.getElementById('mult-user-display').innerText = `${currentPlayerName} 的九九乘法`;
+            document.getElementById('calc-user-display').innerText = `${currentPlayerName} 的加減法`;
             speakText(`歡迎 ${currentPlayerName} 來到遊戲樂園！請選擇想玩的遊戲。`);
         }
         startBtn.addEventListener('click', handleStart);
@@ -1160,7 +1270,7 @@
             }
         });
 
-        // ========== 九九乘法邏輯（50 關，每題 2 分，答錯倒扣 2 分） ==========
+        // ========== 九九乘法邏輯 ==========
         const MULT_TOTAL = 50;
         const MULT_POINTS = 2;
 
@@ -1215,7 +1325,6 @@
             multRoundEl.innerText = multCurrent;
             multLock = false;
 
-            // 產生 2~9 的乘法（九九乘法範圍）
             const a = Math.floor(Math.random() * 8) + 2;
             const b = Math.floor(Math.random() * 8) + 2;
             multAnswer = a * b;
@@ -1223,7 +1332,6 @@
             multAEl.textContent = a;
             multBEl.textContent = b;
 
-            // 產生四個選項（包含正解與三個不重複的干擾項）
             const options = new Set([multAnswer]);
             while (options.size < 4) {
                 let offset = (Math.floor(Math.random() * 5) + 1) * (Math.random() < 0.5 ? -1 : 1);
@@ -1305,6 +1413,168 @@
             multWinEl.classList.add('show');
             playWinSound();
             speakText(`完成五十關！你總共得到 ${multScore} 分，答對 ${multCorrect} 題，答錯 ${multWrong} 題。`);
+            confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+            setTimeout(() => {
+                confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
+            }, 300);
+        }
+
+        // ========== 加減法邏輯（50 關，每題 2 分，答錯倒扣 2 分） ==========
+        const CALC_TOTAL = 50;
+        const CALC_POINTS = 2;
+
+        let calcScore = 0;
+        let calcCorrect = 0;
+        let calcWrong = 0;
+        let calcCurrent = 0;
+        let calcAnswer = 0;
+        let calcLock = false;
+        let calcLockTimer = null;
+        let calcFinished = false;
+
+        const calcAEl = document.getElementById('calcA');
+        const calcBEl = document.getElementById('calcB');
+        const calcOpEl = document.getElementById('calcOp');
+        const calcOptionsEl = document.getElementById('calcOptions');
+        const calcFeedbackEl = document.getElementById('calcFeedback');
+        const calcCorrectEl = document.getElementById('calcCorrect');
+        const calcWrongEl = document.getElementById('calcWrong');
+        const calcScoreEl = document.getElementById('calcScore');
+        const calcRoundEl = document.getElementById('calcRound');
+        const calcWinEl = document.getElementById('calcWin');
+        const calcWinTitle = document.getElementById('calcWinTitle');
+        const calcWinText = document.getElementById('calcWinText');
+        const calcQuestionEl = document.getElementById('calcQuestion');
+
+        function resetCalcGame() {
+            if (calcLockTimer) { clearTimeout(calcLockTimer); calcLockTimer = null; }
+            calcScore = 0;
+            calcCorrect = 0;
+            calcWrong = 0;
+            calcCurrent = 0;
+            calcLock = false;
+            calcFinished = false;
+            calcScoreEl.innerText = '0';
+            calcCorrectEl.innerText = '0';
+            calcWrongEl.innerText = '0';
+            calcRoundEl.innerText = '1';
+            calcFeedbackEl.innerText = '';
+            calcFeedbackEl.className = 'calc-feedback';
+            calcWinEl.classList.remove('show');
+            calcQuestionEl.style.display = 'block';
+            calcOptionsEl.style.display = 'grid';
+            nextCalcQuestion();
+        }
+
+        function nextCalcQuestion() {
+            if (calcCurrent >= CALC_TOTAL) {
+                finishCalcGame();
+                return;
+            }
+            calcCurrent++;
+            calcRoundEl.innerText = calcCurrent;
+            calcLock = false;
+
+            // 隨機加法或減法
+            const isAdd = Math.random() < 0.5;
+            let a, b, answer;
+            if (isAdd) {
+                a = Math.floor(Math.random() * 50) + 1;   // 1~50
+                b = Math.floor(Math.random() * 50) + 1;   // 1~50
+                answer = a + b;
+            } else {
+                a = Math.floor(Math.random() * 50) + 10;  // 10~59
+                b = Math.floor(Math.random() * (a - 1)) + 1; // 1 ~ a-1，確保結果為正
+                answer = a - b;
+            }
+            calcAnswer = answer;
+
+            calcAEl.textContent = a;
+            calcBEl.textContent = b;
+            calcOpEl.textContent = isAdd ? '+' : '−';
+
+            // 產生四個選項（正解 + 三個干擾項）
+            const options = new Set([answer]);
+            while (options.size < 4) {
+                let offset = (Math.floor(Math.random() * 10) + 1) * (Math.random() < 0.5 ? -1 : 1);
+                let fake = answer + offset;
+                if (fake < 0 || fake > 120) continue;
+                options.add(fake);
+            }
+            const optArr = shuffle(Array.from(options));
+
+            calcOptionsEl.innerHTML = '';
+            optArr.forEach(val => {
+                const btn = document.createElement('button');
+                btn.className = 'calc-option';
+                btn.textContent = val;
+                btn.addEventListener('click', () => handleCalcAnswer(btn, val));
+                calcOptionsEl.appendChild(btn);
+            });
+
+            calcFeedbackEl.innerText = '';
+            calcFeedbackEl.className = 'calc-feedback';
+        }
+
+        function handleCalcAnswer(btn, val) {
+            if (calcLock || calcFinished) return;
+            calcLock = true;
+
+            const isCorrect = val === calcAnswer;
+            document.querySelectorAll('.calc-option').forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                calcCorrect++;
+                calcCorrectEl.innerText = calcCorrect;
+                calcScore += CALC_POINTS;
+                calcScoreEl.innerText = calcScore;
+                calcFeedbackEl.innerText = `✅ 答對了！+${CALC_POINTS} 分`;
+                calcFeedbackEl.className = 'calc-feedback ok';
+                playMatchSound();
+            } else {
+                btn.classList.add('wrong');
+                calcWrong++;
+                calcWrongEl.innerText = calcWrong;
+                calcScore -= CALC_POINTS;
+                calcScoreEl.innerText = calcScore;
+                calcFeedbackEl.innerText = `❌ 答錯了，正確答案是 ${calcAnswer}，-${CALC_POINTS} 分`;
+                calcFeedbackEl.className = 'calc-feedback no';
+                playWrongSound();
+                document.querySelectorAll('.calc-option').forEach(b => {
+                    if (Number(b.textContent) === calcAnswer) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            calcLockTimer = setTimeout(() => {
+                calcLockTimer = null;
+                nextCalcQuestion();
+            }, 1200);
+        }
+
+        function finishCalcGame() {
+            calcFinished = true;
+            calcQuestionEl.style.display = 'none';
+            calcOptionsEl.style.display = 'none';
+            calcFeedbackEl.innerText = '';
+            calcWinTitle.textContent = `🏆 完成 50 關！總得分：${calcScore} 分`;
+            calcWinText.innerHTML = `答對 ${calcCorrect} 題，答錯 ${calcWrong} 題。<br>
+                每題 ${CALC_POINTS} 分，答錯倒扣 ${CALC_POINTS} 分。<br>
+                滿分 ${CALC_TOTAL * CALC_POINTS} 分。`;
+            if (calcScore === CALC_TOTAL * CALC_POINTS) {
+                calcWinText.innerHTML += '<br>🌟 滿分！你是加減法小天才！';
+            } else if (calcScore >= 80) {
+                calcWinText.innerHTML += '<br>💪 表現很棒，繼續加油！';
+            } else if (calcScore >= 50) {
+                calcWinText.innerHTML += '<br>👍 不錯喔，再練習會更厲害！';
+            } else {
+                calcWinText.innerHTML += '<br>😊 別灰心，多練習幾次一定可以的！';
+            }
+            calcWinEl.classList.add('show');
+            playWinSound();
+            speakText(`完成五十關！你總共得到 ${calcScore} 分，答對 ${calcCorrect} 題，答錯 ${calcWrong} 題。`);
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
             setTimeout(() => {
                 confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
