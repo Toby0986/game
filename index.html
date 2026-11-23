@@ -385,7 +385,7 @@
             box-shadow: 0 4px 0 #bf360c;
         }
 
-        /* 加減法（沿用九九乘法樣式，換色） */
+        /* 加減法 */
         .calc-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .calc-header { background: #3949ab; }
         .calc-header .back-btn { background: #9fa8da; box-shadow: 0 2px 0 #283593; color: #1a237e; }
@@ -1714,9 +1714,9 @@
             }, 300);
         }
 
-        // ========== 迷宮邏輯 ==========
+        // ========== 迷宮邏輯（已修正：保證可達出口） ==========
         const MAZE_LEVELS = 10;
-        const MAZE_TIME_LIMIT = 5 * 60 * 1000; // 5 分鐘
+        const MAZE_TIME_LIMIT = 5 * 60 * 1000;
         const MAZE_BEST_KEY = 'mazeBestTime';
 
         const mazeCanvas = document.getElementById('mazeCanvas');
@@ -1732,17 +1732,17 @@
         const mazeBoardWrap = document.getElementById('mazeBoardWrap');
 
         let mazeLevel = 1;
-        let mazeGrid = [];        // 二維陣列：1 牆壁、0 通道
-        let mazeSize = 8;         // 每關格子數（8x8 起）
-        let mazePlayer = { r: 0, c: 0 };
+        let mazeGrid = [];
+        let mazeSize = 8;
+        let mazePlayer = { r: 1, c: 1 };
         let mazeGoal = { r: 0, c: 0 };
         let mazeStartTime = 0;
         let mazeTimerInterval = null;
         let mazeFinished = false;
         let mazePlaying = false;
         let mazeBestTime = null;
+        let mazePath = []; // 記錄正確路徑（除錯用，可視化）
 
-        // 讀取歷史最快紀錄
         try {
             const saved = localStorage.getItem(MAZE_BEST_KEY);
             if (saved) mazeBestTime = Number(saved);
@@ -1764,14 +1764,13 @@
             return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
         }
 
-        // 產生迷宮（DFS 遞迴回溯法）
+        // 產生迷宮（DFS），並回傳起點與終點之間的路徑
         function generateMaze(size) {
-            // 全部設為牆壁
             const grid = Array.from({ length: size }, () => Array(size).fill(1));
             const stack = [];
-            const start = { r: 1, c: 1 };
-            grid[start.r][start.c] = 0;
-            stack.push(start);
+            const startR = 1, startC = 1;
+            grid[startR][startC] = 0;
+            stack.push({ r: startR, c: startC });
 
             const dirs = [
                 { dr: -2, dc: 0 }, { dr: 2, dc: 0 },
@@ -1797,19 +1796,86 @@
                     stack.push({ r: next.r, c: next.c });
                 }
             }
-            return grid;
+
+            // 用 BFS 從起點找一條到終點的路徑
+            const goalR = size - 2, goalC = size - 2;
+            grid[goalR][goalC] = 0; // 先確保出口是通道（可能已被 DFS 打通，也可能沒有）
+
+            const path = findPath(grid, startR, startC, goalR, goalC);
+
+            // 若沒有路徑（理論上 DFS 迷宮連通，但保險起見），強制打通一條
+            if (!path) {
+                // 直接打通從起點到終點的直線（簡易備案）
+                let r = startR, c = startC;
+                while (r !== goalR || c !== goalC) {
+                    if (r !== goalR) {
+                        grid[r + 1] && (grid[r + 1][c] = 0);
+                        r++;
+                    } else if (c !== goalC) {
+                        grid[r][c + 1] = 0;
+                        c++;
+                    }
+                }
+                grid[goalR][goalC] = 0;
+                return { grid, goalR, goalC };
+            }
+
+            // 沿著路徑把出口打通（其實 BFS 找到路徑就代表可達）
+            return { grid, goalR, goalC };
+        }
+
+        // BFS 找最短路徑（回傳路徑節點陣列，找不到回傳 null）
+        function findPath(grid, sr, sc, gr, gc) {
+            const size = grid.length;
+            const visited = Array.from({ length: size }, () => Array(size).fill(false));
+            const prev = Array.from({ length: size }, () => Array(size).fill(null));
+            const q = [{ r: sr, c: sc }];
+            visited[sr][sc] = true;
+            const dirs = [
+                { dr: -1, dc: 0 }, { dr: 1, dc: 0 },
+                { dr: 0, dc: -1 }, { dr: 0, dc: 1 }
+            ];
+
+            while (q.length) {
+                const { r, c } = q.shift();
+                if (r === gr && c === gc) {
+                    // 回溯路徑
+                    const path = [];
+                    let cur = { r, c };
+                    while (cur) {
+                        path.push(cur);
+                        cur = prev[cur.r][cur.c];
+                    }
+                    return path.reverse();
+                }
+                for (const d of dirs) {
+                    const nr = r + d.dr, nc = c + d.dc;
+                    if (nr >= 0 && nr < size && nc >= 0 && nc < size &&
+                        !visited[nr][nc] && grid[nr][nc] === 0) {
+                        visited[nr][nc] = true;
+                        prev[nr][nc] = { r, c };
+                        q.push({ r: nr, c: nc });
+                    }
+                }
+            }
+            return null;
         }
 
         function buildMazeLevel() {
-            // 關卡越大，迷宮越大（8, 10, 12, ... 每 2 關 +2）
             mazeSize = 8 + Math.floor((mazeLevel - 1) / 2) * 2;
             if (mazeSize > 20) mazeSize = 20;
 
-            mazeGrid = generateMaze(mazeSize);
+            const result = generateMaze(mazeSize);
+            mazeGrid = result.grid;
+            mazeGoal = { r: result.goalR, c: result.goalC };
             mazePlayer = { r: 1, c: 1 };
-            // 出口設在右下角附近的通道
-            mazeGoal = { r: mazeSize - 2, c: mazeSize - 2 };
+
+            // 確保起點是通道
+            mazeGrid[mazePlayer.r][mazePlayer.c] = 0;
             mazeGrid[mazeGoal.r][mazeGoal.c] = 0;
+
+            // 重新計算路徑（給繪圖與除錯用，可選）
+            mazePath = findPath(mazeGrid, mazePlayer.r, mazePlayer.c, mazeGoal.r, mazeGoal.c) || [];
 
             drawMaze();
             mazeLevelEl.innerText = mazeLevel;
@@ -1826,11 +1892,9 @@
             mazeCanvas.height = cell * size;
             mazeCanvas.style.width = '100%';
 
-            // 背景
             mazeCtx.fillStyle = '#fff';
             mazeCtx.fillRect(0, 0, mazeCanvas.width, mazeCanvas.height);
 
-            // 牆壁與通道
             for (let r = 0; r < size; r++) {
                 for (let c = 0; c < size; c++) {
                     if (mazeGrid[r][c] === 1) {
@@ -1893,7 +1957,6 @@
             mazeFinished = true;
             playWinSound();
             if (mazeLevel >= MAZE_LEVELS) {
-                // 全部關卡完成
                 stopMazeTimer();
                 const elapsed = Date.now() - mazeStartTime;
                 let isNewBest = false;
