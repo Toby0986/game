@@ -444,75 +444,64 @@
             box-shadow: 0 4px 0 #283593;
         }
 
-        /* 迷宮 */
-        .maze-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .maze-header { background: #2e7d32; }
-        .maze-header .back-btn { background: #a5d6a7; box-shadow: 0 2px 0 #1b5e20; color: #1b5e20; }
-        .maze-header .sound-btn { background: #a5d6a7; box-shadow: 0 2px 0 #1b5e20; color: #1b5e20; }
-        .maze-content {
-            flex: 1; padding: 14px; background: linear-gradient(180deg, #e8f5e9, #c8e6c9);
-            display: flex; flex-direction: column; align-items: center; gap: 12px; overflow-y: auto;
+        /* 注音遊戲 */
+        .zhuyin-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .zhuyin-header { background: #d81b60; }
+        .zhuyin-header .back-btn { background: #f48fb1; box-shadow: 0 2px 0 #ad1457; color: #4a148c; }
+        .zhuyin-header .sound-btn { background: #f48fb1; box-shadow: 0 2px 0 #ad1457; color: #4a148c; }
+        .zhuyin-content {
+            flex: 1; padding: 20px; background: linear-gradient(180deg, #fce4ec, #f8bbd0);
+            display: flex; flex-direction: column; align-items: center; gap: 16px; overflow-y: auto;
         }
-        .maze-info {
-            background: #fff; border-radius: 20px; padding: 10px 16px; font-size: 14px;
-            font-weight: bold; color: #2e7d32; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-            width: 100%; max-width: 400px; display: flex; justify-content: space-between;
-            gap: 8px; flex-wrap: wrap;
+        .zhuyin-score {
+            background: #fff; border-radius: 20px; padding: 10px 16px; font-size: 15px;
+            font-weight: bold; color: #ad1457; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            text-align: center; width: 100%; max-width: 380px;
+            display: flex; justify-content: space-between; gap: 6px;
         }
-        .maze-info span { white-space: nowrap; }
-        .maze-info .best { color: #ff6f00; }
-        .maze-timer {
-            font-size: 20px; font-weight: bold; color: #2e7d32;
-            background: #fff; border-radius: 20px; padding: 6px 20px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+        .zhuyin-score span { white-space: nowrap; }
+        .zhuyin-question {
+            background: #fff; border-radius: 24px; padding: 24px 20px; text-align: center;
+            width: 100%; max-width: 380px; box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+            font-size: 72px; font-weight: bold; color: #880e4f;
+            border: 4px solid #f48fb1;
+            min-height: 140px;
+            display: flex; align-items: center; justify-content: center;
         }
-        .maze-timer.warning { color: #d32f2f; animation: pulse 1s infinite; }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+        .zhuyin-options {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+            width: 100%; max-width: 380px;
         }
-        .maze-board-wrap {
-            position: relative; background: #fff; border-radius: 18px;
-            padding: 10px; box-shadow: 0 6px 0 rgba(0,0,0,0.08);
-            border: 3px solid #81c784; touch-action: none;
+        .zhuyin-option {
+            background: #fff; border: 4px solid #f48fb1; border-radius: 18px;
+            padding: 16px 10px; font-size: 32px; font-weight: bold; color: #880e4f;
+            cursor: pointer; box-shadow: 0 5px 0 #ad1457; transition: transform 0.1s;
         }
-        #mazeCanvas {
-            display: block; touch-action: none; border-radius: 10px;
-            width: 100%; height: auto;
+        .zhuyin-option:active { transform: translateY(3px); box-shadow: 0 2px 0 #ad1457; }
+        .zhuyin-option.correct { background: #c8e6c9; border-color: #43a047; color: #1b5e20; box-shadow: 0 5px 0 #2e7d32; }
+        .zhuyin-option.wrong { background: #ffcdd2; border-color: #e53935; color: #b71c1c; box-shadow: 0 5px 0 #c62828; }
+        .zhuyin-option:disabled { cursor: default; opacity: 0.85; }
+        .zhuyin-feedback {
+            font-size: 18px; font-weight: bold; min-height: 28px; text-align: center;
         }
-        .maze-controls {
-            display: grid; grid-template-columns: repeat(3, 60px);
-            grid-template-rows: repeat(3, 60px); gap: 6px; justify-content: center;
-            margin-top: 4px;
-        }
-        .maze-btn {
-            background: #66bb6a; color: #fff; border: none; border-radius: 14px;
-            font-size: 24px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 0 #2e7d32; display: flex; align-items: center; justify-content: center;
-        }
-        .maze-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2e7d32; }
-        .maze-btn.up { grid-column: 2; grid-row: 1; }
-        .maze-btn.left { grid-column: 1; grid-row: 2; }
-        .maze-btn.right { grid-column: 3; grid-row: 2; }
-        .maze-btn.down { grid-column: 2; grid-row: 3; }
-        .maze-actions { display: flex; gap: 12px; width: 100%; max-width: 400px; margin-top: 4px; }
-        .maze-actions .action-btn { flex: 1; font-size: 15px; padding: 12px 0; }
-        .maze-actions .action-btn.reset { background: #2e7d32; box-shadow: 0 4px 0 #1b5e20; }
-        .maze-win, .maze-lose {
+        .zhuyin-feedback.ok { color: #2e7d32; }
+        .zhuyin-feedback.no { color: #c62828; }
+        .zhuyin-actions { display: flex; gap: 12px; width: 100%; max-width: 380px; }
+        .zhuyin-actions .action-btn { flex: 1; font-size: 15px; padding: 12px 0; }
+        .zhuyin-actions .action-btn.reset { background: #d81b60; box-shadow: 0 4px 0 #880e4f; }
+        .zhuyin-win {
             background: #fff; border-radius: 20px; padding: 20px; text-align: center;
-            width: 100%; max-width: 400px; box-shadow: 0 5px 0 rgba(0,0,0,0.08); display: none;
+            width: 100%; max-width: 380px; box-shadow: 0 5px 0 rgba(0,0,0,0.08); display: none;
         }
-        .maze-win.show, .maze-lose.show { display: block; }
-        .maze-win .big-emoji, .maze-lose .big-emoji { font-size: 56px; margin-bottom: 6px; }
-        .maze-win h3, .maze-lose h3 { margin: 0 0 8px; color: #2e7d32; font-size: 22px; }
-        .maze-lose h3 { color: #c62828; }
-        .maze-win p, .maze-lose p { margin: 0 0 14px; color: #666; font-size: 15px; line-height: 1.6; }
-        .maze-win button, .maze-lose button {
-            background: #2e7d32; color: #fff; border: none; padding: 12px 30px;
+        .zhuyin-win.show { display: block; }
+        .zhuyin-win .big-emoji { font-size: 56px; margin-bottom: 6px; }
+        .zhuyin-win h3 { margin: 0 0 8px; color: #ad1457; font-size: 22px; }
+        .zhuyin-win p { margin: 0 0 14px; color: #666; font-size: 15px; line-height: 1.6; }
+        .zhuyin-win button {
+            background: #d81b60; color: #fff; border: none; padding: 12px 30px;
             font-size: 17px; font-weight: bold; border-radius: 30px; cursor: pointer;
-            box-shadow: 0 4px 0 #1b5e20;
+            box-shadow: 0 4px 0 #880e4f;
         }
-        .maze-lose button { background: #c62828; box-shadow: 0 4px 0 #8e0000; }
 
         /* 遮罩 */
         .welcome-overlay {
@@ -596,11 +585,11 @@
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
-                    <div class="game-card" onclick="launchGame('maze')">
-                        <div class="game-icon">🧩</div>
+                    <div class="game-card" onclick="launchGame('zhuyin')">
+                        <div class="game-icon">ㄅ</div>
                         <div class="game-info">
-                            <h3>迷宮探險</h3>
-                            <p>10 個關卡、限時 5 分鐘，挑戰最快過關紀錄！</p>
+                            <h3>注音遊戲</h3>
+                            <p>認出正確的注音符號，挑戰你的注音能力！</p>
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
@@ -766,47 +755,36 @@
             </div>
         </div>
 
-        <!-- ========== 迷宮視圖 ========== -->
-        <div id="mazeView" class="maze-app hidden">
-            <div class="game-header maze-header">
+        <!-- ========== 注音遊戲視圖 ========== -->
+        <div id="zhuyinView" class="zhuyin-app hidden">
+            <div class="game-header zhuyin-header">
                 <div class="header-title">
-                    <span>🧩</span> <span id="maze-user-display">迷宮探險</span>
+                    <span>ㄅ</span> <span id="zhuyin-user-display">注音遊戲</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button class="speak-btn" onclick="speakGameIntro('maze')">🔊 玩法</button>
+                    <button class="speak-btn" onclick="speakGameIntro('zhuyin')">🔊 玩法</button>
                     <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
-                    <button class="sound-btn" id="sound-toggle-btn-maze" onclick="toggleSound()">🔊 音效: 開</button>
+                    <button class="sound-btn" id="sound-toggle-btn-zhuyin" onclick="toggleSound()">🔊 音效: 開</button>
                 </div>
             </div>
-            <div class="maze-content">
-                <div class="maze-info">
-                    <span>第 <span id="mazeLevel">1</span> / 10 關</span>
-                    <span class="best">🏆 最快：<span id="mazeBest">--</span></span>
+            <div class="zhuyin-content">
+                <div class="zhuyin-score">
+                    <span>第 <span id="zhuyinRound">1</span> / 20 關</span>
+                    <span>得分：<span id="zhuyinScore">0</span></span>
+                    <span>答對：<span id="zhuyinCorrect">0</span></span>
+                    <span>答錯：<span id="zhuyinWrong">0</span></span>
                 </div>
-                <div class="maze-timer" id="mazeTimer">⏱️ 05:00</div>
-                <div class="maze-board-wrap" id="mazeBoardWrap">
-                    <canvas id="mazeCanvas" width="320" height="320"></canvas>
-                </div>
-                <div class="maze-controls">
-                    <button class="maze-btn up" onclick="moveMaze('up')">⬆️</button>
-                    <button class="maze-btn left" onclick="moveMaze('left')">⬅️</button>
-                    <button class="maze-btn right" onclick="moveMaze('right')">➡️</button>
-                    <button class="maze-btn down" onclick="moveMaze('down')">⬇️</button>
-                </div>
-                <div class="maze-win" id="mazeWin">
+                <div class="zhuyin-question" id="zhuyinQuestion">ㄅ</div>
+                <div class="zhuyin-options" id="zhuyinOptions"></div>
+                <div class="zhuyin-feedback" id="zhuyinFeedback"></div>
+                <div class="zhuyin-win" id="zhuyinWin">
                     <div class="big-emoji">🏆</div>
-                    <h3 id="mazeWinTitle">恭喜過關！</h3>
-                    <p id="mazeWinText"></p>
-                    <button onclick="nextMazeLevel()">下一關</button>
+                    <h3 id="zhuyinWinTitle">太厲害了！</h3>
+                    <p id="zhuyinWinText"></p>
+                    <button onclick="resetZhuyinGame()">再玩一次</button>
                 </div>
-                <div class="maze-lose" id="mazeLose">
-                    <div class="big-emoji">⏰</div>
-                    <h3>時間到！</h3>
-                    <p id="mazeLoseText">別灰心，再挑戰一次吧！</p>
-                    <button onclick="resetMazeGame()">重新開始</button>
-                </div>
-                <div class="maze-actions">
-                    <button class="action-btn reset" onclick="resetMazeGame()">🔄 重新開始</button>
+                <div class="zhuyin-actions">
+                    <button class="action-btn reset" onclick="resetZhuyinGame()">🔄 重新開始</button>
                 </div>
             </div>
         </div>
@@ -842,7 +820,7 @@
 
         function updateSoundButtons() {
             const label = soundEnabled ? '🔊 音效: 開' : '🔇 音效: 關';
-            ['sound-toggle-btn-lobby', 'sound-toggle-btn-paint', 'sound-toggle-btn-memory', 'sound-toggle-btn-guess', 'sound-toggle-btn-mult', 'sound-toggle-btn-calc', 'sound-toggle-btn-maze'].forEach(id => {
+            ['sound-toggle-btn-lobby', 'sound-toggle-btn-paint', 'sound-toggle-btn-memory', 'sound-toggle-btn-guess', 'sound-toggle-btn-mult', 'sound-toggle-btn-calc', 'sound-toggle-btn-zhuyin'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.innerText = label;
             });
@@ -861,7 +839,7 @@
             guess: '歡迎來到猜數字！我想了一個一到一百之間的整數。你每次輸入一個數字，我會告訴你太大還是太小，直到你猜中為止。看看你總共需要猜幾次！',
             mult: '歡迎來到九九乘法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的乘積，看看你最後能得到幾分！',
             calc: '歡迎來到加減法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的答案，看看你最後能得到幾分！',
-            maze: '歡迎來到迷宮探險！總共有十個關卡，限時五分鐘。請用方向按鈕或鍵盤方向鍵，從左上角走到右下角的出口。走到出口就可以進入下一關。看看你能不能打破最快過關紀錄！'
+            zhuyin: '歡迎來到注音遊戲！總共有二十關。我會顯示一個注音符號，請從四個選項中選出正確的注音符號。每題答對得五分，答錯不扣分，看看你能得到幾分！'
         };
 
         function speakText(text, interrupt = true) {
@@ -996,7 +974,7 @@
         const guessView = document.getElementById('guessView');
         const multView = document.getElementById('multView');
         const calcView = document.getElementById('calcView');
-        const mazeView = document.getElementById('mazeView');
+        const zhuyinView = document.getElementById('zhuyinView');
         const welcomeOverlay = document.getElementById('welcome-overlay');
 
         function showLobby() {
@@ -1006,7 +984,7 @@
             guessView.classList.add('hidden');
             multView.classList.add('hidden');
             calcView.classList.add('hidden');
-            mazeView.classList.add('hidden');
+            zhuyinView.classList.add('hidden');
             document.getElementById('lobby-username').innerText = currentPlayerName;
         }
 
@@ -1017,7 +995,7 @@
             guessView.classList.add('hidden');
             multView.classList.add('hidden');
             calcView.classList.add('hidden');
-            mazeView.classList.add('hidden');
+            zhuyinView.classList.add('hidden');
 
             if (gameId === 'paint') {
                 paintView.classList.remove('hidden');
@@ -1049,12 +1027,12 @@
                 initAudio();
                 resetCalcGame();
                 setTimeout(() => speakGameIntro('calc'), 300);
-            } else if (gameId === 'maze') {
-                mazeView.classList.remove('hidden');
-                document.getElementById('maze-user-display').innerText = `${currentPlayerName} 的迷宮探險`;
+            } else if (gameId === 'zhuyin') {
+                zhuyinView.classList.remove('hidden');
+                document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音遊戲`;
                 initAudio();
-                resetMazeGame();
-                setTimeout(() => speakGameIntro('maze'), 300);
+                resetZhuyinGame();
+                setTimeout(() => speakGameIntro('zhuyin'), 300);
             }
         }
 
@@ -1063,7 +1041,7 @@
             if (memoryFlipTimer) { clearTimeout(memoryFlipTimer); memoryFlipTimer = null; }
             if (multLockTimer) { clearTimeout(multLockTimer); multLockTimer = null; }
             if (calcLockTimer) { clearTimeout(calcLockTimer); calcLockTimer = null; }
-            stopMazeTimer();
+            if (zhuyinLockTimer) { clearTimeout(zhuyinLockTimer); zhuyinLockTimer = null; }
             if (speechSynthesis) speechSynthesis.cancel();
             showLobby();
         }
@@ -1083,7 +1061,7 @@
             document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
             document.getElementById('mult-user-display').innerText = `${currentPlayerName} 的九九乘法`;
             document.getElementById('calc-user-display').innerText = `${currentPlayerName} 的加減法`;
-            document.getElementById('maze-user-display').innerText = `${currentPlayerName} 的迷宮探險`;
+            document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音遊戲`;
             speakText(`歡迎 ${currentPlayerName} 來到遊戲樂園！請選擇想玩的遊戲。`);
         }
         startBtn.addEventListener('click', handleStart);
@@ -1714,366 +1692,155 @@
             }, 300);
         }
 
-        // ========== 迷宮邏輯（已修正：保證可達出口） ==========
-        const MAZE_LEVELS = 10;
-        const MAZE_TIME_LIMIT = 5 * 60 * 1000;
-        const MAZE_BEST_KEY = 'mazeBestTime';
+        // ========== 注音遊戲邏輯 ==========
+        const ZHUYIN_TOTAL = 20;
+        const ZHUYIN_POINTS = 5;
+        const ZHUYIN_SYMBOLS = [
+            'ㄅ', 'ㄆ', 'ㄇ', 'ㄈ', 'ㄉ', 'ㄊ', 'ㄋ', 'ㄌ',
+            'ㄍ', 'ㄎ', 'ㄏ', 'ㄐ', 'ㄑ', 'ㄒ', 'ㄓ', 'ㄔ',
+            'ㄕ', 'ㄖ', 'ㄗ', 'ㄘ', 'ㄙ', 'ㄧ', 'ㄨ', 'ㄩ',
+            'ㄚ', 'ㄛ', 'ㄜ', 'ㄝ', 'ㄞ', 'ㄟ', 'ㄠ', 'ㄡ',
+            'ㄢ', 'ㄣ', 'ㄤ', 'ㄥ', 'ㄦ'
+        ];
 
-        const mazeCanvas = document.getElementById('mazeCanvas');
-        const mazeCtx = mazeCanvas.getContext('2d');
-        const mazeLevelEl = document.getElementById('mazeLevel');
-        const mazeBestEl = document.getElementById('mazeBest');
-        const mazeTimerEl = document.getElementById('mazeTimer');
-        const mazeWinEl = document.getElementById('mazeWin');
-        const mazeLoseEl = document.getElementById('mazeLose');
-        const mazeWinTitle = document.getElementById('mazeWinTitle');
-        const mazeWinText = document.getElementById('mazeWinText');
-        const mazeLoseText = document.getElementById('mazeLoseText');
-        const mazeBoardWrap = document.getElementById('mazeBoardWrap');
+        let zhuyinScore = 0;
+        let zhuyinCorrect = 0;
+        let zhuyinWrong = 0;
+        let zhuyinCurrent = 0;
+        let zhuyinAnswer = '';
+        let zhuyinLock = false;
+        let zhuyinLockTimer = null;
+        let zhuyinFinished = false;
 
-        let mazeLevel = 1;
-        let mazeGrid = [];
-        let mazeSize = 8;
-        let mazePlayer = { r: 1, c: 1 };
-        let mazeGoal = { r: 0, c: 0 };
-        let mazeStartTime = 0;
-        let mazeTimerInterval = null;
-        let mazeFinished = false;
-        let mazePlaying = false;
-        let mazeBestTime = null;
-        let mazePath = []; // 記錄正確路徑（除錯用，可視化）
+        const zhuyinQuestionEl = document.getElementById('zhuyinQuestion');
+        const zhuyinOptionsEl = document.getElementById('zhuyinOptions');
+        const zhuyinFeedbackEl = document.getElementById('zhuyinFeedback');
+        const zhuyinCorrectEl = document.getElementById('zhuyinCorrect');
+        const zhuyinWrongEl = document.getElementById('zhuyinWrong');
+        const zhuyinScoreEl = document.getElementById('zhuyinScore');
+        const zhuyinRoundEl = document.getElementById('zhuyinRound');
+        const zhuyinWinEl = document.getElementById('zhuyinWin');
+        const zhuyinWinTitle = document.getElementById('zhuyinWinTitle');
+        const zhuyinWinText = document.getElementById('zhuyinWinText');
 
-        try {
-            const saved = localStorage.getItem(MAZE_BEST_KEY);
-            if (saved) mazeBestTime = Number(saved);
-        } catch (e) {}
-        updateMazeBestDisplay();
+        function resetZhuyinGame() {
+            if (zhuyinLockTimer) { clearTimeout(zhuyinLockTimer); zhuyinLockTimer = null; }
+            zhuyinScore = 0;
+            zhuyinCorrect = 0;
+            zhuyinWrong = 0;
+            zhuyinCurrent = 0;
+            zhuyinLock = false;
+            zhuyinFinished = false;
+            zhuyinScoreEl.innerText = '0';
+            zhuyinCorrectEl.innerText = '0';
+            zhuyinWrongEl.innerText = '0';
+            zhuyinRoundEl.innerText = '1';
+            zhuyinFeedbackEl.innerText = '';
+            zhuyinFeedbackEl.className = 'zhuyin-feedback';
+            zhuyinWinEl.classList.remove('show');
+            zhuyinQuestionEl.style.display = 'flex';
+            zhuyinOptionsEl.style.display = 'grid';
+            nextZhuyinQuestion();
+        }
 
-        function updateMazeBestDisplay() {
-            if (mazeBestTime && mazeBestTime > 0) {
-                mazeBestEl.innerText = formatTime(mazeBestTime);
-            } else {
-                mazeBestEl.innerText = '--';
+        function nextZhuyinQuestion() {
+            if (zhuyinCurrent >= ZHUYIN_TOTAL) {
+                finishZhuyinGame();
+                return;
             }
+            zhuyinCurrent++;
+            zhuyinRoundEl.innerText = zhuyinCurrent;
+            zhuyinLock = false;
+
+            // 隨機選擇一個正確的注音符號
+            const correctSymbol = ZHUYIN_SYMBOLS[Math.floor(Math.random() * ZHUYIN_SYMBOLS.length)];
+            zhuyinAnswer = correctSymbol;
+
+            zhuyinQuestionEl.textContent = correctSymbol;
+
+            // 產生三個不同的干擾選項
+            const options = new Set([correctSymbol]);
+            while (options.size < 4) {
+                const randomSymbol = ZHUYIN_SYMBOLS[Math.floor(Math.random() * ZHUYIN_SYMBOLS.length)];
+                options.add(randomSymbol);
+            }
+            const optArr = shuffle(Array.from(options));
+
+            zhuyinOptionsEl.innerHTML = '';
+            optArr.forEach(symbol => {
+                const btn = document.createElement('button');
+                btn.className = 'zhuyin-option';
+                btn.textContent = symbol;
+                btn.addEventListener('click', () => handleZhuyinAnswer(btn, symbol));
+                zhuyinOptionsEl.appendChild(btn);
+            });
+
+            zhuyinFeedbackEl.innerText = '';
+            zhuyinFeedbackEl.className = 'zhuyin-feedback';
         }
 
-        function formatTime(ms) {
-            const totalSec = Math.floor(ms / 1000);
-            const min = Math.floor(totalSec / 60);
-            const sec = totalSec % 60;
-            return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-        }
+        function handleZhuyinAnswer(btn, symbol) {
+            if (zhuyinLock || zhuyinFinished) return;
+            zhuyinLock = true;
 
-        // 產生迷宮（DFS），並回傳起點與終點之間的路徑
-        function generateMaze(size) {
-            const grid = Array.from({ length: size }, () => Array(size).fill(1));
-            const stack = [];
-            const startR = 1, startC = 1;
-            grid[startR][startC] = 0;
-            stack.push({ r: startR, c: startC });
+            const isCorrect = symbol === zhuyinAnswer;
+            document.querySelectorAll('.zhuyin-option').forEach(b => b.disabled = true);
 
-            const dirs = [
-                { dr: -2, dc: 0 }, { dr: 2, dc: 0 },
-                { dr: 0, dc: -2 }, { dr: 0, dc: 2 }
-            ];
-
-            while (stack.length) {
-                const cur = stack[stack.length - 1];
-                const neighbors = [];
-                dirs.forEach(d => {
-                    const nr = cur.r + d.dr;
-                    const nc = cur.c + d.dc;
-                    if (nr > 0 && nr < size - 1 && nc > 0 && nc < size - 1 && grid[nr][nc] === 1) {
-                        neighbors.push({ r: nr, c: nc, dr: d.dr, dc: d.dc });
+            if (isCorrect) {
+                btn.classList.add('correct');
+                zhuyinCorrect++;
+                zhuyinCorrectEl.innerText = zhuyinCorrect;
+                zhuyinScore += ZHUYIN_POINTS;
+                zhuyinScoreEl.innerText = zhuyinScore;
+                zhuyinFeedbackEl.innerText = `✅ 答對了！+${ZHUYIN_POINTS} 分`;
+                zhuyinFeedbackEl.className = 'zhuyin-feedback ok';
+                playMatchSound();
+            } else {
+                btn.classList.add('wrong');
+                zhuyinWrong++;
+                zhuyinWrongEl.innerText = zhuyinWrong;
+                zhuyinFeedbackEl.innerText = `❌ 答錯了，正確答案是 ${zhuyinAnswer}`;
+                zhuyinFeedbackEl.className = 'zhuyin-feedback no';
+                playWrongSound();
+                document.querySelectorAll('.zhuyin-option').forEach(b => {
+                    if (b.textContent === zhuyinAnswer) {
+                        b.classList.add('correct');
                     }
                 });
-                if (neighbors.length === 0) {
-                    stack.pop();
-                } else {
-                    const next = neighbors[Math.floor(Math.random() * neighbors.length)];
-                    grid[cur.r + next.dr / 2][cur.c + next.dc / 2] = 0;
-                    grid[next.r][next.c] = 0;
-                    stack.push({ r: next.r, c: next.c });
-                }
             }
 
-            // 用 BFS 從起點找一條到終點的路徑
-            const goalR = size - 2, goalC = size - 2;
-            grid[goalR][goalC] = 0; // 先確保出口是通道（可能已被 DFS 打通，也可能沒有）
-
-            const path = findPath(grid, startR, startC, goalR, goalC);
-
-            // 若沒有路徑（理論上 DFS 迷宮連通，但保險起見），強制打通一條
-            if (!path) {
-                // 直接打通從起點到終點的直線（簡易備案）
-                let r = startR, c = startC;
-                while (r !== goalR || c !== goalC) {
-                    if (r !== goalR) {
-                        grid[r + 1] && (grid[r + 1][c] = 0);
-                        r++;
-                    } else if (c !== goalC) {
-                        grid[r][c + 1] = 0;
-                        c++;
-                    }
-                }
-                grid[goalR][goalC] = 0;
-                return { grid, goalR, goalC };
-            }
-
-            // 沿著路徑把出口打通（其實 BFS 找到路徑就代表可達）
-            return { grid, goalR, goalC };
+            zhuyinLockTimer = setTimeout(() => {
+                zhuyinLockTimer = null;
+                nextZhuyinQuestion();
+            }, 1200);
         }
 
-        // BFS 找最短路徑（回傳路徑節點陣列，找不到回傳 null）
-        function findPath(grid, sr, sc, gr, gc) {
-            const size = grid.length;
-            const visited = Array.from({ length: size }, () => Array(size).fill(false));
-            const prev = Array.from({ length: size }, () => Array(size).fill(null));
-            const q = [{ r: sr, c: sc }];
-            visited[sr][sc] = true;
-            const dirs = [
-                { dr: -1, dc: 0 }, { dr: 1, dc: 0 },
-                { dr: 0, dc: -1 }, { dr: 0, dc: 1 }
-            ];
-
-            while (q.length) {
-                const { r, c } = q.shift();
-                if (r === gr && c === gc) {
-                    // 回溯路徑
-                    const path = [];
-                    let cur = { r, c };
-                    while (cur) {
-                        path.push(cur);
-                        cur = prev[cur.r][cur.c];
-                    }
-                    return path.reverse();
-                }
-                for (const d of dirs) {
-                    const nr = r + d.dr, nc = c + d.dc;
-                    if (nr >= 0 && nr < size && nc >= 0 && nc < size &&
-                        !visited[nr][nc] && grid[nr][nc] === 0) {
-                        visited[nr][nc] = true;
-                        prev[nr][nc] = { r, c };
-                        q.push({ r: nr, c: nc });
-                    }
-                }
+        function finishZhuyinGame() {
+            zhuyinFinished = true;
+            zhuyinQuestionEl.style.display = 'none';
+            zhuyinOptionsEl.style.display = 'none';
+            zhuyinFeedbackEl.innerText = '';
+            zhuyinWinTitle.textContent = `🏆 完成 20 關！總得分：${zhuyinScore} 分`;
+            zhuyinWinText.innerHTML = `答對 ${zhuyinCorrect} 題，答錯 ${zhuyinWrong} 題。<br>
+                每題 ${ZHUYIN_POINTS} 分，答錯不扣分。<br>
+                滿分 ${ZHUYIN_TOTAL * ZHUYIN_POINTS} 分。`;
+            if (zhuyinScore === ZHUYIN_TOTAL * ZHUYIN_POINTS) {
+                zhuyinWinText.innerHTML += '<br>🌟 滿分！你是注音小天才！';
+            } else if (zhuyinScore >= 70) {
+                zhuyinWinText.innerHTML += '<br>💪 表現很棒，繼續加油！';
+            } else if (zhuyinScore >= 40) {
+                zhuyinWinText.innerHTML += '<br>👍 不錯喔，再練習會更厲害！';
+            } else {
+                zhuyinWinText.innerHTML += '<br>😊 別灰心，多練習幾次一定可以的！';
             }
-            return null;
-        }
-
-        function buildMazeLevel() {
-            mazeSize = 8 + Math.floor((mazeLevel - 1) / 2) * 2;
-            if (mazeSize > 20) mazeSize = 20;
-
-            const result = generateMaze(mazeSize);
-            mazeGrid = result.grid;
-            mazeGoal = { r: result.goalR, c: result.goalC };
-            mazePlayer = { r: 1, c: 1 };
-
-            // 確保起點是通道
-            mazeGrid[mazePlayer.r][mazePlayer.c] = 0;
-            mazeGrid[mazeGoal.r][mazeGoal.c] = 0;
-
-            // 重新計算路徑（給繪圖與除錯用，可選）
-            mazePath = findPath(mazeGrid, mazePlayer.r, mazePlayer.c, mazeGoal.r, mazeGoal.c) || [];
-
-            drawMaze();
-            mazeLevelEl.innerText = mazeLevel;
-            mazeWinEl.classList.remove('show');
-            mazeLoseEl.classList.remove('show');
-            mazeFinished = false;
-            mazePlaying = true;
-        }
-
-        function drawMaze() {
-            const size = mazeSize;
-            const cell = Math.floor(320 / size);
-            mazeCanvas.width = cell * size;
-            mazeCanvas.height = cell * size;
-            mazeCanvas.style.width = '100%';
-
-            mazeCtx.fillStyle = '#fff';
-            mazeCtx.fillRect(0, 0, mazeCanvas.width, mazeCanvas.height);
-
-            for (let r = 0; r < size; r++) {
-                for (let c = 0; c < size; c++) {
-                    if (mazeGrid[r][c] === 1) {
-                        mazeCtx.fillStyle = '#2e7d32';
-                    } else {
-                        mazeCtx.fillStyle = '#f1f8e9';
-                    }
-                    mazeCtx.fillRect(c * cell, r * cell, cell, cell);
-                }
-            }
-
-            // 出口
-            mazeCtx.fillStyle = '#ffca28';
-            mazeCtx.fillRect(mazeGoal.c * cell + cell * 0.15, mazeGoal.r * cell + cell * 0.15, cell * 0.7, cell * 0.7);
-            mazeCtx.fillStyle = '#e65100';
-            mazeCtx.font = `bold ${Math.floor(cell * 0.5)}px sans-serif`;
-            mazeCtx.textAlign = 'center';
-            mazeCtx.textBaseline = 'middle';
-            mazeCtx.fillText('🚪', mazeGoal.c * cell + cell / 2, mazeGoal.r * cell + cell / 2);
-
-            // 玩家
-            mazeCtx.fillStyle = '#1e88e5';
-            mazeCtx.beginPath();
-            mazeCtx.arc(mazePlayer.c * cell + cell / 2, mazePlayer.r * cell + cell / 2, cell * 0.32, 0, Math.PI * 2);
-            mazeCtx.fill();
-            mazeCtx.fillStyle = '#fff';
-            mazeCtx.font = `bold ${Math.floor(cell * 0.4)}px sans-serif`;
-            mazeCtx.fillText('😊', mazePlayer.c * cell + cell / 2, mazePlayer.r * cell + cell / 2);
-        }
-
-        function moveMaze(dir) {
-            if (!mazePlaying || mazeFinished) return;
-            let dr = 0, dc = 0;
-            if (dir === 'up') dr = -1;
-            else if (dir === 'down') dr = 1;
-            else if (dir === 'left') dc = -1;
-            else if (dir === 'right') dc = 1;
-
-            const nr = mazePlayer.r + dr;
-            const nc = mazePlayer.c + dc;
-
-            if (nr < 0 || nr >= mazeSize || nc < 0 || nc >= mazeSize) return;
-            if (mazeGrid[nr][nc] === 1) {
-                playWrongSound();
-                return;
-            }
-
-            mazePlayer.r = nr;
-            mazePlayer.c = nc;
-            playPopSound();
-            drawMaze();
-
-            if (mazePlayer.r === mazeGoal.r && mazePlayer.c === mazeGoal.c) {
-                levelComplete();
-            }
-        }
-
-        function levelComplete() {
-            mazePlaying = false;
-            mazeFinished = true;
+            zhuyinWinEl.classList.add('show');
             playWinSound();
-            if (mazeLevel >= MAZE_LEVELS) {
-                stopMazeTimer();
-                const elapsed = Date.now() - mazeStartTime;
-                let isNewBest = false;
-                if (!mazeBestTime || elapsed < mazeBestTime) {
-                    mazeBestTime = elapsed;
-                    isNewBest = true;
-                    try { localStorage.setItem(MAZE_BEST_KEY, String(elapsed)); } catch (e) {}
-                }
-                updateMazeBestDisplay();
-                mazeWinTitle.textContent = '🏆 恭喜全部 10 關完成！';
-                mazeWinText.innerHTML = `總花費時間：${formatTime(elapsed)}<br>` +
-                    (isNewBest ? '🌟 打破你的最快紀錄！' : `你的最快紀錄：${formatTime(mazeBestTime)}`);
-                mazeWinEl.classList.add('show');
-                speakText(`恭喜完成全部十關！總花費時間 ${formatTime(elapsed)}。` + (isNewBest ? '你打破了最快紀錄！' : ''));
-                confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 } });
-                setTimeout(() => {
-                    confetti({ particleCount: 120, spread: 150, origin: { y: 0.4 } });
-                }, 300);
-            } else {
-                mazeWinTitle.textContent = `🎉 第 ${mazeLevel} 關完成！`;
-                mazeWinText.textContent = '準備進入下一關…';
-                mazeWinEl.classList.add('show');
-                speakText(`第 ${mazeLevel} 關完成！`);
-            }
+            speakText(`完成二十關！你總共得到 ${zhuyinScore} 分，答對 ${zhuyinCorrect} 題，答錯 ${zhuyinWrong} 題。`);
+            confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+            setTimeout(() => {
+                confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
+            }, 300);
         }
-
-        function nextMazeLevel() {
-            if (mazeLevel >= MAZE_LEVELS) {
-                resetMazeGame();
-                return;
-            }
-            mazeLevel++;
-            buildMazeLevel();
-        }
-
-        function startMazeTimer() {
-            stopMazeTimer();
-            mazeStartTime = Date.now();
-            mazeTimerInterval = setInterval(() => {
-                const elapsed = Date.now() - mazeStartTime;
-                const remaining = MAZE_TIME_LIMIT - elapsed;
-                if (remaining <= 0) {
-                    stopMazeTimer();
-                    timeUp();
-                    return;
-                }
-                mazeTimerEl.innerText = `⏱️ ${formatTime(remaining)}`;
-                if (remaining <= 30000) {
-                    mazeTimerEl.classList.add('warning');
-                } else {
-                    mazeTimerEl.classList.remove('warning');
-                }
-            }, 200);
-            mazeTimerEl.innerText = `⏱️ ${formatTime(MAZE_TIME_LIMIT)}`;
-            mazeTimerEl.classList.remove('warning');
-        }
-
-        function stopMazeTimer() {
-            if (mazeTimerInterval) {
-                clearInterval(mazeTimerInterval);
-                mazeTimerInterval = null;
-            }
-        }
-
-        function timeUp() {
-            mazePlaying = false;
-            mazeFinished = true;
-            mazeLoseEl.classList.add('show');
-            mazeLoseText.textContent = `你在第 ${mazeLevel} 關時間到了。別灰心，再挑戰一次吧！`;
-            playWrongSound();
-            speakText('時間到！別灰心，再挑戰一次吧！');
-        }
-
-        function resetMazeGame() {
-            stopMazeTimer();
-            mazeLevel = 1;
-            mazePlaying = false;
-            mazeFinished = false;
-            mazeWinEl.classList.remove('show');
-            mazeLoseEl.classList.remove('show');
-            buildMazeLevel();
-            startMazeTimer();
-        }
-
-        // 鍵盤方向鍵
-        window.addEventListener('keydown', (e) => {
-            if (mazeView.classList.contains('hidden')) return;
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-                e.preventDefault();
-                const map = {
-                    ArrowUp: 'up', ArrowDown: 'down',
-                    ArrowLeft: 'left', ArrowRight: 'right'
-                };
-                moveMaze(map[e.key]);
-            }
-        });
-
-        // 滑動操作
-        let mazeTouchStart = null;
-        mazeBoardWrap.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                mazeTouchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            }
-        }, { passive: true });
-
-        mazeBoardWrap.addEventListener('touchend', (e) => {
-            if (!mazeTouchStart) return;
-            const dx = e.changedTouches[0].clientX - mazeTouchStart.x;
-            const dy = e.changedTouches[0].clientY - mazeTouchStart.y;
-            if (Math.abs(dx) < 20 && Math.abs(dy) < 20) return;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                moveMaze(dx > 0 ? 'right' : 'left');
-            } else {
-                moveMaze(dy > 0 ? 'down' : 'up');
-            }
-            mazeTouchStart = null;
-        }, { passive: true });
 
         // 初始化音效按鈕
         updateSoundButtons();
