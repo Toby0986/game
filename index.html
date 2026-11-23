@@ -444,7 +444,7 @@
             box-shadow: 0 4px 0 #283593;
         }
 
-        /* 注音遊戲 */
+        /* 注音與圖片配對 */
         .zhuyin-app { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .zhuyin-header { background: #d81b60; }
         .zhuyin-header .back-btn { background: #f48fb1; box-shadow: 0 2px 0 #ad1457; color: #4a148c; }
@@ -461,11 +461,11 @@
         }
         .zhuyin-score span { white-space: nowrap; }
         .zhuyin-question {
-            background: #fff; border-radius: 24px; padding: 24px 20px; text-align: center;
+            background: #fff; border-radius: 24px; padding: 20px; text-align: center;
             width: 100%; max-width: 380px; box-shadow: 0 6px 0 rgba(0,0,0,0.08);
-            font-size: 72px; font-weight: bold; color: #880e4f;
+            font-size: 90px; color: #880e4f;
             border: 4px solid #f48fb1;
-            min-height: 140px;
+            min-height: 160px;
             display: flex; align-items: center; justify-content: center;
         }
         .zhuyin-options {
@@ -474,8 +474,9 @@
         }
         .zhuyin-option {
             background: #fff; border: 4px solid #f48fb1; border-radius: 18px;
-            padding: 16px 10px; font-size: 32px; font-weight: bold; color: #880e4f;
+            padding: 16px 10px; font-size: 22px; font-weight: bold; color: #880e4f;
             cursor: pointer; box-shadow: 0 5px 0 #ad1457; transition: transform 0.1s;
+            font-family: 'Microsoft JhengHei', sans-serif;
         }
         .zhuyin-option:active { transform: translateY(3px); box-shadow: 0 2px 0 #ad1457; }
         .zhuyin-option.correct { background: #c8e6c9; border-color: #43a047; color: #1b5e20; box-shadow: 0 5px 0 #2e7d32; }
@@ -586,10 +587,10 @@
                         <div class="play-badge">開始玩</div>
                     </div>
                     <div class="game-card" onclick="launchGame('zhuyin')">
-                        <div class="game-icon">ㄅ</div>
+                        <div class="game-icon">🖼️</div>
                         <div class="game-info">
-                            <h3>注音遊戲</h3>
-                            <p>認出正確的注音符號，挑戰你的注音能力！</p>
+                            <h3>注音與圖片配對</h3>
+                            <p>看圖片選出正確的注音，共 20 關，每題 5 分。</p>
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
@@ -755,11 +756,11 @@
             </div>
         </div>
 
-        <!-- ========== 注音遊戲視圖 ========== -->
+        <!-- ========== 注音與圖片配對視圖 ========== -->
         <div id="zhuyinView" class="zhuyin-app hidden">
             <div class="game-header zhuyin-header">
                 <div class="header-title">
-                    <span>ㄅ</span> <span id="zhuyin-user-display">注音遊戲</span>
+                    <span>🖼️</span> <span id="zhuyin-user-display">注音與圖片配對</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <button class="speak-btn" onclick="speakGameIntro('zhuyin')">🔊 玩法</button>
@@ -774,7 +775,7 @@
                     <span>答對：<span id="zhuyinCorrect">0</span></span>
                     <span>答錯：<span id="zhuyinWrong">0</span></span>
                 </div>
-                <div class="zhuyin-question" id="zhuyinQuestion">ㄅ</div>
+                <div class="zhuyin-question" id="zhuyinQuestion">🍎</div>
                 <div class="zhuyin-options" id="zhuyinOptions"></div>
                 <div class="zhuyin-feedback" id="zhuyinFeedback"></div>
                 <div class="zhuyin-win" id="zhuyinWin">
@@ -839,7 +840,7 @@
             guess: '歡迎來到猜數字！我想了一個一到一百之間的整數。你每次輸入一個數字，我會告訴你太大還是太小，直到你猜中為止。看看你總共需要猜幾次！',
             mult: '歡迎來到九九乘法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的乘積，看看你最後能得到幾分！',
             calc: '歡迎來到加減法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的答案，看看你最後能得到幾分！',
-            zhuyin: '歡迎來到注音遊戲！總共有二十關。我會顯示一個注音符號，請從四個選項中選出正確的注音符號。每題答對得五分，答錯不扣分，看看你能得到幾分！'
+            zhuyin: '歡迎來到注音與圖片配對！總共有二十關。我會顯示一張圖片，請從四個注音選項中選出正確的注音。每題答對得五分，答錯不扣分，看看你能得到幾分！'
         };
 
         function speakText(text, interrupt = true) {
@@ -1029,7 +1030,7 @@
                 setTimeout(() => speakGameIntro('calc'), 300);
             } else if (gameId === 'zhuyin') {
                 zhuyinView.classList.remove('hidden');
-                document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音遊戲`;
+                document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音與圖片配對`;
                 initAudio();
                 resetZhuyinGame();
                 setTimeout(() => speakGameIntro('zhuyin'), 300);
@@ -1061,7 +1062,7 @@
             document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
             document.getElementById('mult-user-display').innerText = `${currentPlayerName} 的九九乘法`;
             document.getElementById('calc-user-display').innerText = `${currentPlayerName} 的加減法`;
-            document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音遊戲`;
+            document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音與圖片配對`;
             speakText(`歡迎 ${currentPlayerName} 來到遊戲樂園！請選擇想玩的遊戲。`);
         }
         startBtn.addEventListener('click', handleStart);
@@ -1692,17 +1693,40 @@
             }, 300);
         }
 
-        // ========== 注音遊戲邏輯 ==========
+        // ========== 注音與圖片配對邏輯 ==========
         const ZHUYIN_TOTAL = 20;
         const ZHUYIN_POINTS = 5;
-        const ZHUYIN_SYMBOLS = [
-            'ㄅ', 'ㄆ', 'ㄇ', 'ㄈ', 'ㄉ', 'ㄊ', 'ㄋ', 'ㄌ',
-            'ㄍ', 'ㄎ', 'ㄏ', 'ㄐ', 'ㄑ', 'ㄒ', 'ㄓ', 'ㄔ',
-            'ㄕ', 'ㄖ', 'ㄗ', 'ㄘ', 'ㄙ', 'ㄧ', 'ㄨ', 'ㄩ',
-            'ㄚ', 'ㄛ', 'ㄜ', 'ㄝ', 'ㄞ', 'ㄟ', 'ㄠ', 'ㄡ',
-            'ㄢ', 'ㄣ', 'ㄤ', 'ㄥ', 'ㄦ'
+
+        // 題庫：圖片 Emoji + 正確注音
+        const ZHUYIN_DATA = [
+            { emoji: '🍎', answer: 'ㄆㄧㄥˊ ㄍㄨㄛˇ' },
+            { emoji: '🍌', answer: 'ㄒㄧㄤ ㄐㄧㄠ' },
+            { emoji: '🐶', answer: 'ㄍㄡˇ' },
+            { emoji: '🐱', answer: 'ㄇㄠ' },
+            { emoji: '🐟', answer: 'ㄩˊ' },
+            { emoji: '🌸', answer: 'ㄏㄨㄚ' },
+            { emoji: '🌞', answer: 'ㄊㄞˋ ㄧㄤˊ' },
+            { emoji: '🌙', answer: 'ㄩㄝˋ ㄌㄧㄤˋ' },
+            { emoji: '⭐', answer: 'ㄒㄧㄥ ㄒㄧㄥ' },
+            { emoji: '🏠', answer: 'ㄈㄤˊ ㄗˇ' },
+            { emoji: '🚗', answer: 'ㄑㄧˋ ㄔㄜ' },
+            { emoji: '✈️', answer: 'ㄈㄟ ㄐㄧ' },
+            { emoji: '📚', answer: 'ㄕㄨ' },
+            { emoji: '✏️', answer: 'ㄑㄧㄢ ㄅㄧˇ' },
+            { emoji: '🍰', answer: 'ㄉㄢˋ ㄍㄠ' },
+            { emoji: '🥛', answer: 'ㄋㄧㄡˊ ㄋㄞˇ' },
+            { emoji: '🐘', answer: 'ㄉㄚˋ ㄒㄧㄤˋ' },
+            { emoji: '🦁', answer: 'ㄕ ㄗˇ' },
+            { emoji: '🐼', answer: 'ㄒㄩㄥˊ ㄇㄠ' },
+            { emoji: '🍉', answer: 'ㄒㄧ ㄍㄨㄚ' },
+            { emoji: '🍇', answer: 'ㄆㄨˊ ㄊㄠˊ' },
+            { emoji: '🌧️', answer: 'ㄒㄧㄚˋ ㄩˇ' },
+            { emoji: '❄️', answer: 'ㄒㄩㄝˇ' },
+            { emoji: '🔥', answer: 'ㄏㄨㄛˇ' },
+            { emoji: '💧', answer: 'ㄕㄨㄟˇ' }
         ];
 
+        // 干擾選項池（從題庫中隨機挑選其他答案作為干擾）
         let zhuyinScore = 0;
         let zhuyinCorrect = 0;
         let zhuyinWrong = 0;
@@ -1711,6 +1735,7 @@
         let zhuyinLock = false;
         let zhuyinLockTimer = null;
         let zhuyinFinished = false;
+        let zhuyinQuestions = [];
 
         const zhuyinQuestionEl = document.getElementById('zhuyinQuestion');
         const zhuyinOptionsEl = document.getElementById('zhuyinOptions');
@@ -1740,6 +1765,14 @@
             zhuyinWinEl.classList.remove('show');
             zhuyinQuestionEl.style.display = 'flex';
             zhuyinOptionsEl.style.display = 'grid';
+
+            // 從題庫中隨機挑選 20 題（若題庫不足則重複使用）
+            zhuyinQuestions = shuffle(ZHUYIN_DATA.slice()).slice(0, ZHUYIN_TOTAL);
+            while (zhuyinQuestions.length < ZHUYIN_TOTAL) {
+                zhuyinQuestions = zhuyinQuestions.concat(shuffle(ZHUYIN_DATA.slice()));
+            }
+            zhuyinQuestions = zhuyinQuestions.slice(0, ZHUYIN_TOTAL);
+
             nextZhuyinQuestion();
         }
 
@@ -1748,30 +1781,31 @@
                 finishZhuyinGame();
                 return;
             }
+            const q = zhuyinQuestions[zhuyinCurrent];
             zhuyinCurrent++;
             zhuyinRoundEl.innerText = zhuyinCurrent;
             zhuyinLock = false;
+            zhuyinAnswer = q.answer;
 
-            // 隨機選擇一個正確的注音符號
-            const correctSymbol = ZHUYIN_SYMBOLS[Math.floor(Math.random() * ZHUYIN_SYMBOLS.length)];
-            zhuyinAnswer = correctSymbol;
+            zhuyinQuestionEl.textContent = q.emoji;
 
-            zhuyinQuestionEl.textContent = correctSymbol;
-
-            // 產生三個不同的干擾選項
-            const options = new Set([correctSymbol]);
-            while (options.size < 4) {
-                const randomSymbol = ZHUYIN_SYMBOLS[Math.floor(Math.random() * ZHUYIN_SYMBOLS.length)];
-                options.add(randomSymbol);
+            // 建立選項：正確答案 + 3 個其他注音（從題庫中隨機挑選，確保不重複）
+            const options = new Set([q.answer]);
+            const pool = ZHUYIN_DATA.map(d => d.answer).filter(a => a !== q.answer);
+            const shuffledPool = shuffle(pool);
+            for (const ans of shuffledPool) {
+                if (options.size >= 4) break;
+                options.add(ans);
             }
+
             const optArr = shuffle(Array.from(options));
 
             zhuyinOptionsEl.innerHTML = '';
-            optArr.forEach(symbol => {
+            optArr.forEach(ans => {
                 const btn = document.createElement('button');
                 btn.className = 'zhuyin-option';
-                btn.textContent = symbol;
-                btn.addEventListener('click', () => handleZhuyinAnswer(btn, symbol));
+                btn.textContent = ans;
+                btn.addEventListener('click', () => handleZhuyinAnswer(btn, ans));
                 zhuyinOptionsEl.appendChild(btn);
             });
 
@@ -1779,11 +1813,11 @@
             zhuyinFeedbackEl.className = 'zhuyin-feedback';
         }
 
-        function handleZhuyinAnswer(btn, symbol) {
+        function handleZhuyinAnswer(btn, ans) {
             if (zhuyinLock || zhuyinFinished) return;
             zhuyinLock = true;
 
-            const isCorrect = symbol === zhuyinAnswer;
+            const isCorrect = ans === zhuyinAnswer;
             document.querySelectorAll('.zhuyin-option').forEach(b => b.disabled = true);
 
             if (isCorrect) {
@@ -1799,7 +1833,7 @@
                 btn.classList.add('wrong');
                 zhuyinWrong++;
                 zhuyinWrongEl.innerText = zhuyinWrong;
-                zhuyinFeedbackEl.innerText = `❌ 答錯了，正確答案是 ${zhuyinAnswer}`;
+                zhuyinFeedbackEl.innerText = `❌ 答錯了，正確答案是「${zhuyinAnswer}」`;
                 zhuyinFeedbackEl.className = 'zhuyin-feedback no';
                 playWrongSound();
                 document.querySelectorAll('.zhuyin-option').forEach(b => {
@@ -1812,7 +1846,7 @@
             zhuyinLockTimer = setTimeout(() => {
                 zhuyinLockTimer = null;
                 nextZhuyinQuestion();
-            }, 1200);
+            }, 1400);
         }
 
         function finishZhuyinGame() {
