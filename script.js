@@ -260,31 +260,6 @@ function goBackToLobby() {
     showLobby();
 }
 
-// ========== 暱稱輸入 ==========
-const startBtn = document.getElementById('start-btn');
-
-function handleStart(e) {
-    e.preventDefault();
-    initAudio();
-    const nameInput = document.getElementById('player-name');
-    currentPlayerName = (nameInput ? nameInput.value.trim() : '') || '小寶貝';
-    welcomeOverlay.classList.add('hidden');
-    showLobby();
-
-    document.getElementById('user-display').innerText = `畫家：${currentPlayerName}`;
-    document.getElementById('lobby-username').innerText = currentPlayerName;
-    document.getElementById('memory-user-display').innerText = `${currentPlayerName} 的記憶翻牌`;
-    document.getElementById('guess-user-display').innerText = `${currentPlayerName} 的猜數字`;
-    document.getElementById('mult-user-display').innerText = `${currentPlayerName} 的九九乘法`;
-    document.getElementById('calc-user-display').innerText = `${currentPlayerName} 的加減法`;
-    document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音與圖片配對`;
-    document.getElementById('whack-user-display').innerText = `${currentPlayerName} 的注音打地鼠`;
-
-    speakText(`歡迎 ${currentPlayerName} 來到遊戲樂園！請選擇想玩的遊戲。`);
-}
-startBtn.addEventListener('click', handleStart);
-startBtn.addEventListener('touchend', handleStart);
-
 // ========== 通用工具 ==========
 function shuffle(arr) {
     const a = arr.slice();
