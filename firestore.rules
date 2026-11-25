@@ -10,7 +10,8 @@ service cloud.firestore {
 
       // 沒有勾選公開資訊時，只允許基本欄位（學校、年齡、縣市、頭像不能寫入）
       function baseKeys() {
-        return ['playerId', 'playerName', 'score', 'mode', 'showInfo', 'updatedAt'];
+        return ['playerId', 'playerName', 'score', 'baseScore', 'timeMs', 'rankKey',
+                'mode', 'showInfo', 'updatedAt'];
       }
 
       function validData() {
@@ -18,7 +19,10 @@ service cloud.firestore {
         return gameId in ['memory', 'guess', 'mult', 'calc', 'zhuyin', 'whack']
           && d.playerId == playerId
           && d.playerName is string && d.playerName.size() > 0 && d.playerName.size() <= 30
-          && d.score is number && d.score >= -1000 && d.score <= 100000
+          && d.score is int && d.score >= -1000 && d.score <= 100000
+          && d.baseScore is int && d.baseScore >= -1000 && d.baseScore <= 100000
+          && d.timeMs is int && d.timeMs >= 0 && d.timeMs <= 9999999
+          && d.rankKey == d.score * 10000000 + (9999999 - d.timeMs)
           && d.mode is string && d.mode.size() <= 20
           && d.showInfo is bool
           && d.updatedAt == request.time
@@ -35,8 +39,8 @@ service cloud.firestore {
 
       allow create: if validData();
 
-      // 分數只能不變或變高
-      allow update: if validData() && request.resource.data.score >= resource.data.score;
+      // 成績只能不變或變好（總分更高，或總分相同但用時更短）
+      allow update: if validData() && request.resource.data.rankKey >= resource.data.rankKey;
     }
   }
 }

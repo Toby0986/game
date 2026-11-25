@@ -370,6 +370,7 @@ let memoryFlipped = [];
 let memoryMatched = 0;
 let memoryLock = false;
 let memoryFlipTimer = null;
+let memoryStartTime = 0;   // 翻第一張牌時開始計時
 
 const memoryGridEl = document.getElementById('memoryGrid');
 const memoryStatusEl = document.getElementById('memoryStatus');
@@ -417,6 +418,7 @@ function handleCardClick(cardEl) {
     if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
     if (memoryFlipped.length >= 2) return;
 
+    if (!memoryStartTime) memoryStartTime = performance.now();
     cardEl.classList.add('flipped');
     playFlipSound();
     memoryFlipped.push(cardEl);
@@ -465,11 +467,13 @@ function updateMemoryStatus() {
 }
 
 function winMemoryGame() {
+    const elapsed = memoryStartTime ? performance.now() - memoryStartTime : 0;
+    // 基礎 100 分 + 時間加分（越快越高）
+    const memoryResult = submitTimedScore('memory', 100, elapsed, getScoringPlayer());
+    memoryWinEl.innerHTML = `🎉 全部配對成功！你太厲害了！<br>${formatTimeSummary(memoryResult)}`;
     memoryWinEl.classList.add('show');
     playMatchSound();
-        // 以剩餘時間或翻牌次數計分，簡單起見用 100 分基礎
-    submitScore('memory', 100, currentPlayer || { name: currentPlayerName, age: '', school: '' });
-    speakText('恭喜你！全部配對成功！你太厲害了！');
+    speakText(`恭喜你！全部配對成功！用了 ${Math.round(memoryResult.timeMs / 1000)} 秒，總分 ${memoryResult.score} 分！`);
     confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
     setTimeout(() => {
         confetti({ particleCount: 100, spread: 120, origin: { y: 0.4 } });
@@ -485,6 +489,7 @@ function startMemoryGame() {
     memoryFlipped = [];
     memoryMatched = 0;
     memoryLock = false;
+    memoryStartTime = 0;
     memoryWinEl.classList.remove('show');
     updateMemoryStatus();
     renderMemoryGrid();
@@ -501,6 +506,7 @@ function resetMemoryGame() {
 let guessTarget = 0;
 let guessAttempts = 0;
 let guessFinished = false;
+let guessStartTime = 0;
 
 const guessInput = document.getElementById('guessInput');
 const guessHistory = document.getElementById('guessHistory');
@@ -514,6 +520,7 @@ function resetGuessGame() {
     guessTarget = Math.floor(Math.random() * 100) + 1;
     guessAttempts = 0;
     guessFinished = false;
+    guessStartTime = performance.now();
     guessHistory.innerHTML = '';
     guessResult.classList.remove('show');
     guessInputRow.style.display = 'flex';
@@ -564,24 +571,21 @@ function submitGuess() {
     if (isCorrect) {
         guessFinished = true;
         playWinSound();
-            // 猜越少次分數越高（基礎 110 減去次數 * 10，最低 10）
-    const guessScore = Math.max(10, 110 - guessAttempts * 10);
-    submitScore('guess', guessScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
+        // 猜越少次分數越高（基礎 110 減去次數 * 10，最低 10），再加上時間加分
+        const guessBase = Math.max(10, 110 - guessAttempts * 10);
+        const guessResultData = submitTimedScore('guess', guessBase, performance.now() - guessStartTime, getScoringPlayer());
         guessInputRow.style.display = 'none';
         guessTip.style.display = 'none';
         guessResultTitle.textContent = `🎉 太厲害了！答案是 ${guessTarget}`;
-        guessResultText.textContent = `你總共猜了 ${guessAttempts} 次就答對了！`;
+        guessResultText.innerHTML = `你總共猜了 ${guessAttempts} 次就答對了！<br>${formatTimeSummary(guessResultData)}`;
         guessResult.classList.add('show');
-        speakText(`太厲害了！答案是 ${guessTarget}，你總共猜了 ${guessAttempts} 次就答對了！`);
+        speakText(`太厲害了！答案是 ${guessTarget}，你總共猜了 ${guessAttempts} 次就答對了！用了 ${Math.round(guessResultData.timeMs / 1000)} 秒，總分 ${guessResultData.score} 分！`);
         confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
         setTimeout(() => {
             confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
         }, 300);
     } else {
         playWrongSound();
-            // 猜越少次分數越高（基礎 110 減去次數 * 10，最低 10）
-    const guessScore = Math.max(10, 110 - guessAttempts * 10);
-    submitScore('guess', guessScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
     }
 }
 
@@ -606,6 +610,8 @@ let multAnswer = 0;
 let multLock = false;
 let multLockTimer = null;
 let multFinished = false;
+let multElapsedMs = 0;   // 累計思考時間
+let multQStart = 0;
 
 const multAEl = document.getElementById('multA');
 const multBEl = document.getElementById('multB');
@@ -628,6 +634,8 @@ function resetMultGame() {
     multCurrent = 0;
     multLock = false;
     multFinished = false;
+    multElapsedMs = 0;
+    multQStart = 0;
     multScoreEl.innerText = '0';
     multCorrectEl.innerText = '0';
     multWrongEl.innerText = '0';
@@ -648,6 +656,7 @@ function nextMultQuestion() {
     multCurrent++;
     multRoundEl.innerText = multCurrent;
     multLock = false;
+    multQStart = performance.now();
 
     const a = Math.floor(Math.random() * 8) + 2;
     const b = Math.floor(Math.random() * 8) + 2;
@@ -683,6 +692,7 @@ function handleMultAnswer(btn, val) {
     multLock = true;
 
     const isCorrect = val === multAnswer;
+    multElapsedMs += performance.now() - multQStart;
     document.querySelectorAll('.mult-option').forEach(b => b.disabled = true);
 
     if (isCorrect) {
@@ -716,13 +726,14 @@ function handleMultAnswer(btn, val) {
 
 function finishMultGame() {
     multFinished = true;
+    const multResult = submitTimedScore('mult', multScore, multElapsedMs, getScoringPlayer());
     multQuestionEl.style.display = 'none';
     multOptionsEl.style.display = 'none';
     multFeedbackEl.innerText = '';
-    multWinTitle.textContent = `🏆 完成 50 關！總得分：${multScore} 分`;
+    multWinTitle.textContent = `🏆 完成 50 關！總分：${multResult.score} 分`;
     multWinText.innerHTML = `答對 ${multCorrect} 題，答錯 ${multWrong} 題。<br>
         每題 ${MULT_POINTS} 分，答錯倒扣 ${MULT_POINTS} 分。<br>
-        滿分 ${MULT_TOTAL * MULT_POINTS} 分。`;
+        滿分 ${MULT_TOTAL * MULT_POINTS} 分。<br>${formatTimeSummary(multResult)}`;
     if (multScore === MULT_TOTAL * MULT_POINTS) {
         multWinText.innerHTML += '<br>🌟 滿分！你是乘法小天才！';
     } else if (multScore >= 80) {
@@ -734,8 +745,7 @@ function finishMultGame() {
     }
     multWinEl.classList.add('show');
     playWinSound();
-    submitScore('mult', multScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
-    speakText(`完成五十關！你總共得到 ${multScore} 分，答對 ${multCorrect} 題，答錯 ${multWrong} 題。`);
+    speakText(`完成五十關！答對 ${multCorrect} 題，答錯 ${multWrong} 題，用時 ${Math.round(multResult.timeMs / 1000)} 秒，總分 ${multResult.score} 分。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
         confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
@@ -756,6 +766,8 @@ let calcAnswer = 0;
 let calcLock = false;
 let calcLockTimer = null;
 let calcFinished = false;
+let calcElapsedMs = 0;   // 累計思考時間
+let calcQStart = 0;
 
 const calcAEl = document.getElementById('calcA');
 const calcBEl = document.getElementById('calcB');
@@ -779,6 +791,8 @@ function resetCalcGame() {
     calcCurrent = 0;
     calcLock = false;
     calcFinished = false;
+    calcElapsedMs = 0;
+    calcQStart = 0;
     calcScoreEl.innerText = '0';
     calcCorrectEl.innerText = '0';
     calcWrongEl.innerText = '0';
@@ -799,6 +813,7 @@ function nextCalcQuestion() {
     calcCurrent++;
     calcRoundEl.innerText = calcCurrent;
     calcLock = false;
+    calcQStart = performance.now();
 
     const isAdd = Math.random() < 0.5;
     let a, b, answer;
@@ -844,6 +859,7 @@ function handleCalcAnswer(btn, val) {
     calcLock = true;
 
     const isCorrect = val === calcAnswer;
+    calcElapsedMs += performance.now() - calcQStart;
     document.querySelectorAll('.calc-option').forEach(b => b.disabled = true);
 
     if (isCorrect) {
@@ -877,13 +893,14 @@ function handleCalcAnswer(btn, val) {
 
 function finishCalcGame() {
     calcFinished = true;
+    const calcResult = submitTimedScore('calc', calcScore, calcElapsedMs, getScoringPlayer());
     calcQuestionEl.style.display = 'none';
     calcOptionsEl.style.display = 'none';
     calcFeedbackEl.innerText = '';
-    calcWinTitle.textContent = `🏆 完成 50 關！總得分：${calcScore} 分`;
+    calcWinTitle.textContent = `🏆 完成 50 關！總分：${calcResult.score} 分`;
     calcWinText.innerHTML = `答對 ${calcCorrect} 題，答錯 ${calcWrong} 題。<br>
         每題 ${CALC_POINTS} 分，答錯倒扣 ${CALC_POINTS} 分。<br>
-        滿分 ${CALC_TOTAL * CALC_POINTS} 分。`;
+        滿分 ${CALC_TOTAL * CALC_POINTS} 分。<br>${formatTimeSummary(calcResult)}`;
     if (calcScore === CALC_TOTAL * CALC_POINTS) {
         calcWinText.innerHTML += '<br>🌟 滿分！你是加減法小天才！';
     } else if (calcScore >= 80) {
@@ -895,8 +912,7 @@ function finishCalcGame() {
     }
     calcWinEl.classList.add('show');
     playWinSound();
-    submitScore('calc', calcScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
-    speakText(`完成五十關！你總共得到 ${calcScore} 分，答對 ${calcCorrect} 題，答錯 ${calcWrong} 題。`);
+    speakText(`完成五十關！答對 ${calcCorrect} 題，答錯 ${calcWrong} 題，用時 ${Math.round(calcResult.timeMs / 1000)} 秒，總分 ${calcResult.score} 分。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
         confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
@@ -945,6 +961,8 @@ let zhuyinAnswer = '';
 let zhuyinLock = false;
 let zhuyinLockTimer = null;
 let zhuyinFinished = false;
+let zhuyinElapsedMs = 0;   // 累計思考時間
+let zhuyinQStart = 0;
 let zhuyinQuestions = [];
 
 const zhuyinQuestionEl = document.getElementById('zhuyinQuestion');
@@ -966,6 +984,8 @@ function resetZhuyinGame() {
     zhuyinCurrent = 0;
     zhuyinLock = false;
     zhuyinFinished = false;
+    zhuyinElapsedMs = 0;
+    zhuyinQStart = 0;
     zhuyinScoreEl.innerText = '0';
     zhuyinCorrectEl.innerText = '0';
     zhuyinWrongEl.innerText = '0';
@@ -994,6 +1014,7 @@ function nextZhuyinQuestion() {
     zhuyinCurrent++;
     zhuyinRoundEl.innerText = zhuyinCurrent;
     zhuyinLock = false;
+    zhuyinQStart = performance.now();
     zhuyinAnswer = q.answer;
 
     zhuyinQuestionEl.textContent = q.emoji;
@@ -1026,6 +1047,7 @@ function handleZhuyinAnswer(btn, ans) {
     zhuyinLock = true;
 
     const isCorrect = ans === zhuyinAnswer;
+    zhuyinElapsedMs += performance.now() - zhuyinQStart;
     document.querySelectorAll('.zhuyin-option').forEach(b => b.disabled = true);
 
     if (isCorrect) {
@@ -1057,13 +1079,14 @@ function handleZhuyinAnswer(btn, ans) {
 
 function finishZhuyinGame() {
     zhuyinFinished = true;
+    const zhuyinResult = submitTimedScore('zhuyin', zhuyinScore, zhuyinElapsedMs, getScoringPlayer());
     zhuyinQuestionEl.style.display = 'none';
     zhuyinOptionsEl.style.display = 'none';
     zhuyinFeedbackEl.innerText = '';
-    zhuyinWinTitle.textContent = `🏆 完成 20 關！總得分：${zhuyinScore} 分`;
+    zhuyinWinTitle.textContent = `🏆 完成 20 關！總分：${zhuyinResult.score} 分`;
     zhuyinWinText.innerHTML = `答對 ${zhuyinCorrect} 題，答錯 ${zhuyinWrong} 題。<br>
         每題 ${ZHUYIN_POINTS} 分，答錯不扣分。<br>
-        滿分 ${ZHUYIN_TOTAL * ZHUYIN_POINTS} 分。`;
+        滿分 ${ZHUYIN_TOTAL * ZHUYIN_POINTS} 分。<br>${formatTimeSummary(zhuyinResult)}`;
     if (zhuyinScore === ZHUYIN_TOTAL * ZHUYIN_POINTS) {
         zhuyinWinText.innerHTML += '<br>🌟 滿分！你是注音小天才！';
     } else if (zhuyinScore >= 70) {
@@ -1075,8 +1098,7 @@ function finishZhuyinGame() {
     }
     zhuyinWinEl.classList.add('show');
     playWinSound();
-    submitScore('zhuyin', zhuyinScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
-    speakText(`完成二十關！你總共得到 ${zhuyinScore} 分，答對 ${zhuyinCorrect} 題，答錯 ${zhuyinWrong} 題。`);
+    speakText(`完成二十關！答對 ${zhuyinCorrect} 題，答錯 ${zhuyinWrong} 題，用時 ${Math.round(zhuyinResult.timeMs / 1000)} 秒，總分 ${zhuyinResult.score} 分。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
         confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
@@ -1314,7 +1336,7 @@ function endWhackGame() {
     }
     whackWinEl.classList.add('show');
     playWinSound();
-    submitScore('whack', whackScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
+    submitScore('whack', whackScore, getScoringPlayer());
     speakText(`時間到！你總共得到 ${whackScore} 分，打對 ${whackCorrect} 隻，打錯 ${whackWrong} 隻。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
