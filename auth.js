@@ -137,7 +137,7 @@ function handleGoogleCredentialResponse(response) {
     const all = loadAllPlayers();
     const existing = all[googleId];
 
-    if (existing && existing.age && existing.school) {
+    if (existing && existing.age && existing.school && existing.city) {
         // 舊玩家，直接登入
         currentPlayer = existing;
         savePlayerToStorage(currentPlayer);
@@ -173,17 +173,22 @@ function guestLogin() {
     });
 }
 
-// ---------- 填寫年齡與學校 ----------
-function showProfileForm(baseInfo) {
+// ---------- 填寫年齡、學校、縣市 ----------
+function showProfileForm(baseInfo, editing = false) {
     const overlay = document.getElementById('profile-overlay');
     const nameEl = document.getElementById('profile-name');
     const ageInput = document.getElementById('profile-age');
     const schoolInput = document.getElementById('profile-school');
+    const cityInput = document.getElementById('profile-city');
+    const showInfoInput = document.getElementById('profile-show-info');
     const confirmBtn = document.getElementById('profile-confirm-btn');
+    const cancelBtn = document.getElementById('profile-cancel-btn');
 
     nameEl.textContent = baseInfo.name;
     ageInput.value = '';
     schoolInput.value = '';
+    cityInput.value = '';
+    showInfoInput.checked = false;   // 預設不公開，由玩家自己決定
 
     // 若已有資料，帶入
     const all = loadAllPlayers();
@@ -191,7 +196,13 @@ function showProfileForm(baseInfo) {
     if (existing) {
         ageInput.value = existing.age || '';
         schoolInput.value = existing.school || '';
+        cityInput.value = existing.city || '';
+        showInfoInput.checked = !!existing.showInfo;
     }
+
+    // 只有「修改資料」時才能取消
+    cancelBtn.classList.toggle('hidden', !editing);
+    cancelBtn.onclick = () => overlay.classList.add('hidden');
 
     overlay.classList.remove('hidden');
     setTimeout(() => ageInput.focus(), 100);
@@ -199,6 +210,7 @@ function showProfileForm(baseInfo) {
     confirmBtn.onclick = () => {
         const age = parseInt(ageInput.value, 10);
         const school = schoolInput.value.trim();
+        const city = cityInput.value;
 
         if (!age || age < 3 || age > 99) {
             alert('請輸入有效的年齡（3~99）');
@@ -210,23 +222,46 @@ function showProfileForm(baseInfo) {
             schoolInput.focus();
             return;
         }
+        if (!city) {
+            alert('請選擇縣市');
+            cityInput.focus();
+            return;
+        }
 
         currentPlayer = {
             ...baseInfo,
             age,
             school,
-            createdAt: existing ? existing.createdAt : new Date().toISOString()
+            city,
+            showInfo: showInfoInput.checked,
+            createdAt: existing && existing.createdAt ? existing.createdAt : new Date().toISOString()
         };
 
         upsertPlayerRecord(currentPlayer);
         savePlayerToStorage(currentPlayer);
         overlay.classList.add('hidden');
-        finishLogin();
+        finishLogin(editing);
+
+        // 同步更新已經在排行榜上的紀錄（公開 / 不公開設定改變時需要）
+        if (typeof updatePlayerInfoOnBoard === 'function') {
+            updatePlayerInfoOnBoard(currentPlayer);
+        }
     };
 }
 
+// 從大廳點玩家名片，重新修改資料
+function editProfile() {
+    if (!currentPlayer) return;
+    showProfileForm({
+        googleId: currentPlayer.googleId,
+        name: currentPlayer.name,
+        email: currentPlayer.email || '',
+        picture: currentPlayer.picture || ''
+    }, true);
+}
+
 // ---------- 登入完成 ----------
-function finishLogin() {
+function finishLogin(silent) {
     const welcomeOverlay = document.getElementById('welcome-overlay');
     welcomeOverlay.classList.add('hidden');
 
@@ -251,7 +286,7 @@ function finishLogin() {
 
     const infoEl = document.getElementById('lobby-player-info');
     if (infoEl) {
-        infoEl.textContent = `${currentPlayer.school} ｜ ${currentPlayer.age} 歲`;
+        infoEl.textContent = `${currentPlayer.school} ｜ ${currentPlayer.age} 歲 ｜ ${currentPlayer.city}`;
     }
 
     // 給主程式用
@@ -260,7 +295,7 @@ function finishLogin() {
     }
 
     showLobby();
-    speakText(`歡迎 ${currentPlayer.name} 來到遊戲樂園！`);
+    if (!silent) speakText(`歡迎 ${currentPlayer.name} 來到遊戲樂園！`);
 
     // 顯示登出按鈕
     const logoutBtn = document.getElementById('logout-btn');
@@ -286,7 +321,7 @@ function logout() {
 // ---------- 初始化 ----------
 window.addEventListener('DOMContentLoaded', () => {
     const saved = loadPlayerFromStorage();
-    if (saved && saved.name && saved.age && saved.school) {
+    if (saved && saved.name && saved.age && saved.school && saved.city) {
         currentPlayer = saved;
         finishLogin();
     } else {

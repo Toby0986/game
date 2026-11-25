@@ -17,7 +17,7 @@
                         <span>🎮</span> <span>遊戲大廳</span>
                     </div>
                     <div class="header-actions">
-                        <div class="player-chip">
+                        <div class="player-chip" onclick="editProfile()" title="點一下修改我的資料" style="cursor:pointer;">
                             <div class="player-avatar" id="lobby-avatar">👤</div>
                             <div class="player-meta">
                                 <div class="player-name" id="lobby-username">小寶貝</div>
@@ -358,14 +358,47 @@
 
 <!-- ========== 填寫年齡學校遮罩 ========== -->
 <div id="profile-overlay" class="welcome-overlay hidden">
-    <div class="welcome-card">
+    <div class="welcome-card" style="max-height:100%;overflow-y:auto;">
         <h2>👋 你好，<span id="profile-name">玩家</span></h2>
         <p class="welcome-subtitle">請填寫以下資料，讓排行榜顯示更完整</p>
         <label class="profile-label">年齡</label>
         <input type="number" id="profile-age" placeholder="例如：8" min="3" max="99">
         <label class="profile-label">學校</label>
-        <input type="text" id="profile-school" placeholder="例如：快樂國小">
+        <input type="text" id="profile-school" placeholder="例如：快樂國小" maxlength="40">
+        <label class="profile-label">縣市</label>
+        <select id="profile-city" style="width:100%;padding:12px;font-size:18px;margin:0 0 15px;border:2px solid #ccc;border-radius:12px;background:#fff;color:#333;">
+                <option value="">請選擇縣市</option>
+                <option value="臺北市">臺北市</option>
+                <option value="新北市">新北市</option>
+                <option value="基隆市">基隆市</option>
+                <option value="桃園市">桃園市</option>
+                <option value="新竹市">新竹市</option>
+                <option value="新竹縣">新竹縣</option>
+                <option value="苗栗縣">苗栗縣</option>
+                <option value="臺中市">臺中市</option>
+                <option value="彰化縣">彰化縣</option>
+                <option value="南投縣">南投縣</option>
+                <option value="雲林縣">雲林縣</option>
+                <option value="嘉義市">嘉義市</option>
+                <option value="嘉義縣">嘉義縣</option>
+                <option value="臺南市">臺南市</option>
+                <option value="高雄市">高雄市</option>
+                <option value="屏東縣">屏東縣</option>
+                <option value="宜蘭縣">宜蘭縣</option>
+                <option value="花蓮縣">花蓮縣</option>
+                <option value="臺東縣">臺東縣</option>
+                <option value="澎湖縣">澎湖縣</option>
+                <option value="金門縣">金門縣</option>
+                <option value="連江縣">連江縣</option>
+                <option value="其他／海外">其他／海外</option>
+        </select>
+        <label style="display:flex;align-items:flex-start;gap:8px;text-align:left;margin:4px 0 6px;font-size:14px;color:#444;cursor:pointer;">
+            <input type="checkbox" id="profile-show-info" style="width:20px;height:20px;margin:2px 0 0;padding:0;flex:none;">
+            <span>在排行榜上公開我的學校、年齡、縣市和頭像</span>
+        </label>
+        <p class="login-hint" style="text-align:left;margin-bottom:14px;">不勾選的話，排行榜只會顯示名字和分數，這些資料也不會上傳。之後可以點上方自己的名片修改。</p>
         <button class="start-btn" id="profile-confirm-btn">開始遊戲</button>
+        <button class="guest-login-btn hidden" id="profile-cancel-btn" style="margin-top:12px;background:#9e9e9e;box-shadow:0 4px 0 #757575;">取消</button>
     </div>
 </div>
 
@@ -385,6 +418,7 @@
             <button class="lb-tab" data-game="guess" onclick="switchLeaderboardGame('guess')">🔢 猜數字</button>
         </div>
         <h3 class="leaderboard-game-title" id="leaderboard-game-title">排行榜</h3>
+        <p class="login-hint" id="leaderboard-notice" style="text-align:center;margin:4px 0;"></p>
         <div class="leaderboard-list" id="leaderboard-list"></div>
     </div>
 </div>
@@ -392,6 +426,9 @@
     </div><!-- /app-container -->
 
     <script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="leaderboard.js"></script>
 <script src="auth.js"></script>
 <script src="script.js"></script>

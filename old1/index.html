@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>遊戲大廳 - 兒童創意樂園</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <div class="app-container" id="appContainer">
+        <!-- ========== 大廳視圖 ========== -->
+        <div id="lobbyView" class="lobby-view">
+            <div class="header">
+                    <div class="header-title">
+                        <span>🎮</span> <span>遊戲大廳</span>
+                    </div>
+                    <div class="header-actions">
+                        <div class="player-chip">
+                            <div class="player-avatar" id="lobby-avatar">👤</div>
+                            <div class="player-meta">
+                                <div class="player-name" id="lobby-username">小寶貝</div>
+                                <div class="player-info" id="lobby-player-info"></div>
+                            </div>
+                        </div>
+                        <button class="sound-btn" id="sound-toggle-btn-lobby" onclick="toggleSound()">🔊 音效: 開</button>
+                        <button class="logout-btn hidden" id="logout-btn" onclick="logout()">登出</button>
+                    </div>
+                </div>
+            <div class="lobby">
+                <div class="welcome-banner">
+                    <div class="lobby-tools">
+                        <button class="lobby-tool-btn" onclick="openLeaderboard('mult')">
+                            🏆 查看排行榜
+                        </button>
+                    </div>
+                    <h2>👋 歡迎，<span id="lobby-username-banner">小寶貝</span>！</h2>
+                    <p>請選擇想玩的遊戲，更多遊戲陸續新增中 ✨</p>
+                </div>
+                <div class="game-grid">
+                    <div class="game-card" onclick="launchGame('paint')">
+                        <div class="game-icon">🎨</div>
+                        <div class="game-info">
+                            <h3>神奇魔法畫板</h3>
+                            <p>用手指或滑鼠自由塗鴉，繽紛色彩好好玩！</p>
+                        </div>
+                        <div class="card-actions">
+                        <div class="play-badge">開始玩</div>
+                    </div>
+                    </div>
+                    <div class="game-card" onclick="launchGame('memory')">
+                        <div class="game-icon">🃏</div>
+                        <div class="game-info">
+                            <h3>記憶翻牌</h3>
+                            <p>翻開卡片找出配對，訓練你的好記憶！</p>
+                        </div>
+                        <div class="card-actions">
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('memory')">🏆</button>
+                    </div>
+                    </div>
+                    <div class="game-card" onclick="launchGame('guess')">
+                        <div class="game-icon">🔢</div>
+                        <div class="game-info">
+                            <h3>猜數字</h3>
+                            <p>猜猜看我想的數字是多少？挑戰你的直覺！</p>
+                        </div>
+                        <div class="card-actions">
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('guess')">🏆</button>
+                    </div>
+                    </div>
+                    <div class="game-card" onclick="launchGame('mult')">
+                        <div class="game-icon">✖️</div>
+                        <div class="game-info">
+                            <h3>九九乘法</h3>
+                            <p>50 關挑戰！每題 2 分，答錯倒扣 2 分。</p>
+                        </div>
+                        <div class="card-actions">
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
+                    </div>
+                    </div>
+                    <div class="game-card" onclick="launchGame('calc')">
+                        <div class="game-icon">➕</div>
+                        <div class="game-info">
+                            <h3>加減法</h3>
+                            <p>50 關挑戰！每題 2 分，答錯倒扣 2 分。</p>
+                        </div>
+                        <div class="card-actions">
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('calc')">🏆</button>
+                    </div>
+                    </div>
+                    <div class="game-card" onclick="launchGame('zhuyin')">
+                        <div class="game-icon">🖼️</div>
+                        <div class="game-info">
+                            <h3>注音與圖片配對</h3>
+                            <p>看圖片選出正確的注音，共 20 關，每題 5 分。</p>
+                        </div>
+                        <div class="card-actions">
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('zhuyin')">🏆</button>
+                    </div>
+                    </div>
+                    <div class="game-card" onclick="launchGame('whack')">
+                    <div class="game-icon">🔨</div>
+                    <div class="game-info">
+                        <h3>注音打地鼠</h3>
+                        <p>聽語音找注音，60 秒內打對最多隻地鼠！</p>
+                    </div>
+                    <div class="card-actions">
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('whack')">🏆</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 畫板視圖 ========== -->
+        <div id="paintView" class="game-app paint-app hidden">
+            <div class="game-header paint-header">
+                <div class="header-title">
+                    <span>🎨</span> <span id="user-display">神奇魔法畫板</span>
+                </div>
+                <div class="game-header-actions">
+                    <button class="speak-btn" onclick="speakGameIntro('paint')">🔊 玩法</button>
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-paint" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="canvas-area" id="canvas-area">
+                <canvas id="paintCanvas"></canvas>
+            </div>
+            <div class="toolbar">
+                <div class="palette">
+                    <div class="color-btn active" style="background: #ff5252;" onclick="setColor('#ff5252', event)"></div>
+                    <div class="color-btn" style="background: #ffeb3b;" onclick="setColor('#ffeb3b', event)"></div>
+                    <div class="color-btn" style="background: #69f0ae;" onclick="setColor('#69f0ae', event)"></div>
+                    <div class="color-btn" style="background: #40c4ff;" onclick="setColor('#40c4ff', event)"></div>
+                    <div class="color-btn" style="background: #e040fb;" onclick="setColor('#e040fb', event)"></div>
+                    <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff', event)"></div>
+                </div>
+                <div class="tools-row">
+                    <button class="action-btn clear" onclick="clearCanvas()">🗑️ 全部清除</button>
+                    <button class="action-btn save" onclick="finishArt()">✨ 完成作品！</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 翻牌視圖 ========== -->
+        <div id="memoryView" class="game-app memory-app hidden">
+            <div class="game-header memory-header">
+                <div class="header-title">
+                    <span>🃏</span> <span id="memory-user-display">記憶翻牌</span>
+                </div>
+                <div class="game-header-actions">
+                    <button class="speak-btn" onclick="speakGameIntro('memory')">🔊 玩法</button>
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-memory" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="memory-content">
+                <div class="memory-status" id="memoryStatus">找到 0 / 8 組配對</div>
+                <div class="memory-grid" id="memoryGrid"></div>
+                <div class="memory-win" id="memoryWin">🎉 全部配對成功！你太厲害了！</div>
+                <div class="memory-actions">
+                    <button class="action-btn reset" onclick="resetMemoryGame()">🔄 重新開始</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 猜數字視圖 ========== -->
+        <div id="guessView" class="game-app guess-app hidden">
+            <div class="game-header guess-header">
+                <div class="header-title">
+                    <span>🔢</span> <span id="guess-user-display">猜數字</span>
+                </div>
+                <div class="game-header-actions">
+                    <button class="speak-btn" onclick="speakGameIntro('guess')">🔊 玩法</button>
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-guess" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="guess-content">
+                <div class="guess-tip" id="guessTip">
+                    我想了一個 <strong>1 ~ 100</strong> 的數字，<br>快來猜猜看是什麼！
+                </div>
+                <div class="guess-input-row" id="guessInputRow">
+                    <input type="number" id="guessInput" placeholder="?" min="1" max="100" inputmode="numeric">
+                    <button class="guess-submit" onclick="submitGuess()">猜！</button>
+                </div>
+                <div class="guess-history" id="guessHistory"></div>
+                <div class="guess-result" id="guessResult">
+                    <div class="big-emoji">🎉</div>
+                    <h3 id="guessResultTitle">猜對了！</h3>
+                    <p id="guessResultText"></p>
+                    <button onclick="resetGuessGame()">再玩一次</button>
+                </div>
+                <div class="guess-actions">
+                    <button class="action-btn reset" onclick="resetGuessGame()">🔄 重新開始</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 九九乘法視圖 ========== -->
+        <div id="multView" class="game-app mult-app hidden">
+            <div class="game-header mult-header">
+                <div class="header-title">
+                    <span>✖️</span> <span id="mult-user-display">九九乘法</span>
+                </div>
+                <div class="game-header-actions">
+                    <button class="speak-btn" onclick="speakGameIntro('mult')">🔊 玩法</button>
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-mult" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="mult-content">
+                <div class="mult-score">
+                    <span>第 <span id="multRound">1</span> / 50 關</span>
+                    <span>得分：<span id="multScore">0</span></span>
+                    <span>答對：<span id="multCorrect">0</span></span>
+                    <span>答錯：<span id="multWrong">0</span></span>
+                </div>
+                <div class="mult-question" id="multQuestion">
+                    <span id="multA">3</span> <span class="times">×</span> <span id="multB">4</span> <span class="eq">=</span> <span>?</span>
+                </div>
+                <div class="mult-options" id="multOptions"></div>
+                <div class="mult-feedback" id="multFeedback"></div>
+                <div class="mult-win" id="multWin">
+                    <div class="big-emoji">🏆</div>
+                    <h3 id="multWinTitle">太厲害了！</h3>
+                    <p id="multWinText"></p>
+                    <button onclick="resetMultGame()">再玩一次</button>
+                </div>
+                <div class="mult-actions">
+                    <button class="action-btn reset" onclick="resetMultGame()">🔄 重新開始</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 加減法視圖 ========== -->
+        <div id="calcView" class="game-app calc-app hidden">
+            <div class="game-header calc-header">
+                <div class="header-title">
+                    <span>➕</span> <span id="calc-user-display">加減法</span>
+                </div>
+                <div class="game-header-actions">
+                    <button class="speak-btn" onclick="speakGameIntro('calc')">🔊 玩法</button>
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-calc" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="calc-content">
+                <div class="calc-score">
+                    <span>第 <span id="calcRound">1</span> / 50 關</span>
+                    <span>得分：<span id="calcScore">0</span></span>
+                    <span>答對：<span id="calcCorrect">0</span></span>
+                    <span>答錯：<span id="calcWrong">0</span></span>
+                </div>
+                <div class="calc-question" id="calcQuestion">
+                    <span id="calcA">12</span> <span class="op" id="calcOp">+</span> <span id="calcB">8</span> <span class="eq">=</span> <span>?</span>
+                </div>
+                <div class="calc-options" id="calcOptions"></div>
+                <div class="calc-feedback" id="calcFeedback"></div>
+                <div class="calc-win" id="calcWin">
+                    <div class="big-emoji">🏆</div>
+                    <h3 id="calcWinTitle">太厲害了！</h3>
+                    <p id="calcWinText"></p>
+                    <button onclick="resetCalcGame()">再玩一次</button>
+                </div>
+                <div class="calc-actions">
+                    <button class="action-btn reset" onclick="resetCalcGame()">🔄 重新開始</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 注音與圖片配對視圖 ========== -->
+        <div id="zhuyinView" class="game-app zhuyin-app hidden">
+            <div class="game-header zhuyin-header">
+                <div class="header-title">
+                    <span>🖼️</span> <span id="zhuyin-user-display">注音與圖片配對</span>
+                </div>
+                <div class="game-header-actions">
+                    <button class="speak-btn" onclick="speakGameIntro('zhuyin')">🔊 玩法</button>
+                    <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+                    <button class="sound-btn" id="sound-toggle-btn-zhuyin" onclick="toggleSound()">🔊 音效: 開</button>
+                </div>
+            </div>
+            <div class="zhuyin-content">
+                <div class="zhuyin-score">
+                    <span>第 <span id="zhuyinRound">1</span> / 20 關</span>
+                    <span>得分：<span id="zhuyinScore">0</span></span>
+                    <span>答對：<span id="zhuyinCorrect">0</span></span>
+                    <span>答錯：<span id="zhuyinWrong">0</span></span>
+                </div>
+                <div class="zhuyin-question" id="zhuyinQuestion">🍎</div>
+                <div class="zhuyin-options" id="zhuyinOptions"></div>
+                <div class="zhuyin-feedback" id="zhuyinFeedback"></div>
+                <div class="zhuyin-win" id="zhuyinWin">
+                    <div class="big-emoji">🏆</div>
+                    <h3 id="zhuyinWinTitle">太厲害了！</h3>
+                    <p id="zhuyinWinText"></p>
+                    <button onclick="resetZhuyinGame()">再玩一次</button>
+                </div>
+                <div class="zhuyin-actions">
+                    <button class="action-btn reset" onclick="resetZhuyinGame()">🔄 重新開始</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 注音打地鼠視圖 ========== -->
+<div id="whackView" class="game-app whack-app hidden">
+    <div class="game-header whack-header">
+        <div class="header-title">
+            <span>🔨</span> <span id="whack-user-display">注音打地鼠</span>
+        </div>
+        <div class="game-header-actions">
+            <button class="speak-btn" onclick="speakGameIntro('whack')">🔊 玩法</button>
+            <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+            <button class="sound-btn" id="sound-toggle-btn-whack" onclick="toggleSound()">🔊 音效: 開</button>
+        </div>
+    </div>
+    <div class="whack-content">
+        <div class="whack-score">
+            <span>⏱️ <span id="whackTimer">60</span> 秒</span>
+            <span>得分：<span id="whackScore">0</span></span>
+            <span>打對：<span id="whackCorrect">0</span></span>
+            <span>打錯：<span id="whackWrong">0</span></span>
+        </div>
+        <div class="whack-target-bar">
+            聽一聽，打「<span id="whackTarget">ㄅ</span>」
+            <button class="whack-replay-btn" onclick="replayWhackTarget()">🔊 再聽一次</button>
+        </div>
+        <div class="whack-board" id="whackBoard"></div>
+        <div class="whack-win" id="whackWin">
+            <div class="big-emoji">🏆</div>
+            <h3 id="whackWinTitle">時間到！</h3>
+            <p id="whackWinText"></p>
+            <button onclick="resetWhackGame()">再玩一次</button>
+        </div>
+        <div class="whack-actions">
+            <button class="action-btn reset" onclick="resetWhackGame()">🔄 重新開始</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== 登入遮罩 ========== -->
+<div id="welcome-overlay" class="welcome-overlay">
+    <div class="welcome-card">
+        <h2>✨ 遊戲樂園 ✨</h2>
+        <p class="welcome-subtitle">請先登入以記錄你的成績</p>
+        <div id="google-login-btn" class="google-login-container"></div>
+    </div>
+</div>
+
+<!-- ========== 填寫年齡學校遮罩 ========== -->
+<div id="profile-overlay" class="welcome-overlay hidden">
+    <div class="welcome-card">
+        <h2>👋 你好，<span id="profile-name">玩家</span></h2>
+        <p class="welcome-subtitle">請填寫以下資料，讓排行榜顯示更完整</p>
+        <label class="profile-label">年齡</label>
+        <input type="number" id="profile-age" placeholder="例如：8" min="3" max="99">
+        <label class="profile-label">學校</label>
+        <input type="text" id="profile-school" placeholder="例如：快樂國小">
+        <button class="start-btn" id="profile-confirm-btn">開始遊戲</button>
+    </div>
+</div>
+
+<!-- ========== 排行榜遮罩 ========== -->
+<div id="leaderboard-overlay" class="welcome-overlay hidden">
+    <div class="leaderboard-card">
+        <div class="leaderboard-header">
+            <h2>🏆 排行榜</h2>
+            <button class="lb-close-btn" onclick="closeLeaderboard()">✕</button>
+        </div>
+        <div class="lb-tabs">
+            <button class="lb-tab active" data-game="mult" onclick="switchLeaderboardGame('mult')">✖️ 乘法</button>
+            <button class="lb-tab" data-game="calc" onclick="switchLeaderboardGame('calc')">➕ 加減</button>
+            <button class="lb-tab" data-game="zhuyin" onclick="switchLeaderboardGame('zhuyin')">🖼️ 注音</button>
+            <button class="lb-tab" data-game="whack" onclick="switchLeaderboardGame('whack')">🔨 打地鼠</button>
+            <button class="lb-tab" data-game="memory" onclick="switchLeaderboardGame('memory')">🃏 翻牌</button>
+            <button class="lb-tab" data-game="guess" onclick="switchLeaderboardGame('guess')">🔢 猜數字</button>
+        </div>
+        <h3 class="leaderboard-game-title" id="leaderboard-game-title">排行榜</h3>
+        <div class="leaderboard-list" id="leaderboard-list"></div>
+    </div>
+</div>
+
+    </div><!-- /app-container -->
+
+    <script src="config.js"></script>
+<script src="leaderboard.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
