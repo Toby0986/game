@@ -6,7 +6,6 @@
     <title>遊戲大廳 - 兒童創意樂園</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -36,7 +35,7 @@
                             🏆 查看排行榜
                         </button>
                     </div>
-                    <h2>👋 歡迎，<span id="lobby-username">小寶貝</span>！</h2>
+                    <h2>👋 歡迎，<span id="lobby-username-banner">小寶貝</span>！</h2>
                     <p>請選擇想玩的遊戲，更多遊戲陸續新增中 ✨</p>
                 </div>
                 <div class="game-grid">
@@ -47,8 +46,7 @@
                             <p>用手指或滑鼠自由塗鴉，繽紛色彩好好玩！</p>
                         </div>
                         <div class="card-actions">
-                        <div class="play-badge" onclick="launchGame('mult')">開始玩</div>
-                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
+                        <div class="play-badge">開始玩</div>
                     </div>
                     </div>
                     <div class="game-card" onclick="launchGame('memory')">
@@ -58,8 +56,8 @@
                             <p>翻開卡片找出配對，訓練你的好記憶！</p>
                         </div>
                         <div class="card-actions">
-                        <div class="play-badge" onclick="launchGame('mult')">開始玩</div>
-                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('memory')">🏆</button>
                     </div>
                     </div>
                     <div class="game-card" onclick="launchGame('guess')">
@@ -69,8 +67,8 @@
                             <p>猜猜看我想的數字是多少？挑戰你的直覺！</p>
                         </div>
                         <div class="card-actions">
-                        <div class="play-badge" onclick="launchGame('mult')">開始玩</div>
-                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('guess')">🏆</button>
                     </div>
                     </div>
                     <div class="game-card" onclick="launchGame('mult')">
@@ -80,7 +78,7 @@
                             <p>50 關挑戰！每題 2 分，答錯倒扣 2 分。</p>
                         </div>
                         <div class="card-actions">
-                        <div class="play-badge" onclick="launchGame('mult')">開始玩</div>
+                        <div class="play-badge">開始玩</div>
                         <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
                     </div>
                     </div>
@@ -91,8 +89,8 @@
                             <p>50 關挑戰！每題 2 分，答錯倒扣 2 分。</p>
                         </div>
                         <div class="card-actions">
-                        <div class="play-badge" onclick="launchGame('mult')">開始玩</div>
-                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('calc')">🏆</button>
                     </div>
                     </div>
                     <div class="game-card" onclick="launchGame('zhuyin')">
@@ -102,8 +100,8 @@
                             <p>看圖片選出正確的注音，共 20 關，每題 5 分。</p>
                         </div>
                         <div class="card-actions">
-                        <div class="play-badge" onclick="launchGame('mult')">開始玩</div>
-                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('zhuyin')">🏆</button>
                     </div>
                     </div>
                     <div class="game-card" onclick="launchGame('whack')">
@@ -113,8 +111,8 @@
                         <p>聽語音找注音，60 秒內打對最多隻地鼠！</p>
                     </div>
                     <div class="card-actions">
-                        <div class="play-badge" onclick="launchGame('mult')">開始玩</div>
-                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('mult')">🏆</button>
+                        <div class="play-badge">開始玩</div>
+                        <button class="lb-mini-btn" onclick="event.stopPropagation(); openLeaderboard('whack')">🏆</button>
                     </div>
                 </div>
                 </div>
@@ -391,7 +389,8 @@
     </div>
 </div>
 
-    
+    </div><!-- /app-container -->
+
     <script src="config.js"></script>
 <script src="leaderboard.js"></script>
 <script src="auth.js"></script>

@@ -47,29 +47,50 @@ function upsertPlayerRecord(player) {
 }
 
 // ---------- Google 登入 ----------
+// 加入訪客登入按鈕（永遠提供，避免 Google 登入失敗時卡在登入畫面）
+function appendGuestButton(container, hintText) {
+    const btn = document.createElement('button');
+    btn.className = 'guest-login-btn';
+    btn.textContent = '👤 訪客登入';
+    btn.onclick = guestLogin;
+    container.appendChild(btn);
+
+    if (hintText) {
+        const p = document.createElement('p');
+        p.className = 'login-hint';
+        p.textContent = hintText;
+        container.appendChild(p);
+    }
+}
+
 function initGoogleLogin() {
     const loginContainer = document.getElementById('google-login-btn');
     if (!loginContainer) return;
+    loginContainer.innerHTML = '';
 
-    // 若沒有設定 Client ID，顯示訪客模式按鈕
-    if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID')) {
-        loginContainer.innerHTML = `
-            <button class="guest-login-btn" onclick="guestLogin()">
-                👤 訪客登入（本機測試用）
-            </button>
-            <p class="login-hint">尚未設定 Google Client ID，使用訪客模式</p>
-        `;
+    const noClientId = !GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID');
+
+    // 沒有 Client ID，或用 file:// 開啟（Google 登入不支援）→ 只提供訪客模式
+    if (noClientId) {
+        appendGuestButton(loginContainer, '尚未設定 Google Client ID，使用訪客模式');
+        return;
+    }
+    if (location.protocol === 'file:') {
+        appendGuestButton(loginContainer, '直接開啟檔案時無法使用 Google 登入，請用訪客登入，或改用 http://localhost 開啟');
         return;
     }
 
     // 載入 GIS
     if (typeof google === 'undefined' || !google.accounts) {
-        // 動態載入
         const script = document.createElement('script');
         script.src = 'https://accounts.google.com/gsi/client';
         script.async = true;
         script.defer = true;
         script.onload = () => renderGoogleButton(loginContainer);
+        script.onerror = () => {
+            loginContainer.innerHTML = '';
+            appendGuestButton(loginContainer, '無法載入 Google 登入（請檢查網路），可先使用訪客登入');
+        };
         document.head.appendChild(script);
     } else {
         renderGoogleButton(loginContainer);
@@ -77,18 +98,26 @@ function initGoogleLogin() {
 }
 
 function renderGoogleButton(container) {
-    google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleCredentialResponse,
-        auto_select: false
-    });
-    google.accounts.id.renderButton(container, {
-        theme: 'outline',
-        size: 'large',
-        text: 'signin_with',
-        locale: 'zh-TW',
-        width: 280
-    });
+    container.innerHTML = '';
+    try {
+        const gBtn = document.createElement('div');
+        container.appendChild(gBtn);
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleCredentialResponse,
+            auto_select: false
+        });
+        google.accounts.id.renderButton(gBtn, {
+            theme: 'outline',
+            size: 'large',
+            text: 'signin_with',
+            locale: 'zh-TW',
+            width: 280
+        });
+    } catch (e) {
+        console.error('Google 登入初始化失敗', e);
+    }
+    appendGuestButton(container, 'Google 登入若出現錯誤，可先使用訪客登入');
 }
 
 function handleGoogleCredentialResponse(response) {
@@ -204,11 +233,17 @@ function finishLogin() {
     // 更新大廳顯示
     const lobbyName = document.getElementById('lobby-username');
     if (lobbyName) lobbyName.textContent = currentPlayer.name;
+    const lobbyNameBanner = document.getElementById('lobby-username-banner');
+    if (lobbyNameBanner) lobbyNameBanner.textContent = currentPlayer.name;
 
     const avatarEl = document.getElementById('lobby-avatar');
     if (avatarEl) {
+        avatarEl.textContent = '';
         if (currentPlayer.picture) {
-            avatarEl.innerHTML = `<img src="${currentPlayer.picture}" alt="avatar">`;
+            const img = document.createElement('img');
+            img.src = currentPlayer.picture;
+            img.alt = 'avatar';
+            avatarEl.appendChild(img);
         } else {
             avatarEl.textContent = currentPlayer.name.charAt(0).toUpperCase();
         }
