@@ -1145,6 +1145,303 @@ body {
     box-shadow: 0 4px 0 #4a148c;
 }
 
+/* ========== 登入與玩家資訊 ========== */
+.google-login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.guest-login-btn {
+    background: #4285F4;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #1967d2;
+    width: 100%;
+}
+
+.login-hint {
+    font-size: 12px;
+    color: #999;
+    margin: 0;
+}
+
+.profile-label {
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    margin: 8px 0 4px;
+}
+
+/* 玩家資訊 chip */
+.player-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px 4px 4px;
+    border-radius: 30px;
+}
+
+.player-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #ff7043;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.player-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.player-meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.player-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.player-info {
+    font-size: 10px;
+    color: rgba(255,255,255,0.8);
+}
+
+.logout-btn {
+    background: #fff;
+    color: #d84315;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #ccc;
+}
+
+/* 卡片動作區 */
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.lb-mini-btn {
+    background: #fff8e1;
+    border: 2px solid #ffd54f;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #ffb300;
+}
+
+.lb-mini-btn:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+/* 大廳工具列 */
+.lobby-tools {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.lobby-tool-btn {
+    background: #fff;
+    border: 3px solid #ffd54f;
+    color: #e65100;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #ffb300;
+}
+
+.lobby-tool-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #ffb300;
+}
+
+/* ========== 排行榜 ========== */
+.leaderboard-card {
+    background: #fff;
+    border-radius: 25px;
+    width: 92%;
+    max-width: 460px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #ffd54f, #ffb300);
+}
+
+.leaderboard-header h2 {
+    margin: 0;
+    color: #5d4037;
+    font-size: 20px;
+}
+
+.lb-close-btn {
+    background: #fff;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    color: #d84315;
+    font-weight: bold;
+}
+
+.lb-tabs {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 12px;
+    gap: 6px;
+    background: #fff8e1;
+    border-bottom: 2px solid #ffe082;
+}
+
+.lb-tab {
+    background: #fff;
+    border: 2px solid #ffe082;
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+    color: #6d4c41;
+}
+
+.lb-tab.active {
+    background: #ffb300;
+    color: #fff;
+    border-color: #ff8f00;
+}
+
+.leaderboard-game-title {
+    margin: 12px 20px 8px;
+    font-size: 16px;
+    color: #5d4037;
+}
+
+.leaderboard-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.leaderboard-empty {
+    text-align: center;
+    padding: 30px 10px;
+    color: #999;
+    font-size: 14px;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fafafa;
+    border-radius: 14px;
+    padding: 10px 12px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.04);
+}
+
+.leaderboard-row.top-three {
+    background: #fff8e1;
+}
+
+.lb-rank {
+    font-size: 20px;
+    font-weight: bold;
+    min-width: 32px;
+    text-align: center;
+    color: #e65100;
+}
+
+.lb-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.lb-avatar-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffb300;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.lb-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.lb-name {
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lb-sub {
+    font-size: 11px;
+    color: #999;
+}
+
+.lb-score {
+    font-size: 18px;
+    font-weight: bold;
+    color: #d84315;
+}
+
 /* ========== 進入遮罩 ========== */
 .welcome-overlay {
     position: absolute;

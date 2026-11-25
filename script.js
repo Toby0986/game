@@ -329,6 +329,7 @@ function clearCanvas() {
 
 function finishArt() {
     playPopSound();
+    // 畫板不列入排行榜，可選擇跳過
     confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
     speakText('太棒了！這是一幅超棒的魔法藝術品！');
     alert('🎉 太棒了！這是一幅超棒的魔法藝術品！');
@@ -491,6 +492,8 @@ function updateMemoryStatus() {
 function winMemoryGame() {
     memoryWinEl.classList.add('show');
     playMatchSound();
+        // 以剩餘時間或翻牌次數計分，簡單起見用 100 分基礎
+    submitScore('memory', 100, currentPlayer || { name: currentPlayerName, age: '', school: '' });
     speakText('恭喜你！全部配對成功！你太厲害了！');
     confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
     setTimeout(() => {
@@ -586,6 +589,9 @@ function submitGuess() {
     if (isCorrect) {
         guessFinished = true;
         playWinSound();
+            // 猜越少次分數越高（基礎 110 減去次數 * 10，最低 10）
+    const guessScore = Math.max(10, 110 - guessAttempts * 10);
+    submitScore('guess', guessScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
         guessInputRow.style.display = 'none';
         guessTip.style.display = 'none';
         guessResultTitle.textContent = `🎉 太厲害了！答案是 ${guessTarget}`;
@@ -598,6 +604,9 @@ function submitGuess() {
         }, 300);
     } else {
         playWrongSound();
+            // 猜越少次分數越高（基礎 110 減去次數 * 10，最低 10）
+    const guessScore = Math.max(10, 110 - guessAttempts * 10);
+    submitScore('guess', guessScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
     }
 }
 
@@ -750,6 +759,7 @@ function finishMultGame() {
     }
     multWinEl.classList.add('show');
     playWinSound();
+    submitScore('mult', multScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
     speakText(`完成五十關！你總共得到 ${multScore} 分，答對 ${multCorrect} 題，答錯 ${multWrong} 題。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
@@ -910,6 +920,7 @@ function finishCalcGame() {
     }
     calcWinEl.classList.add('show');
     playWinSound();
+    submitScore('calc', calcScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
     speakText(`完成五十關！你總共得到 ${calcScore} 分，答對 ${calcCorrect} 題，答錯 ${calcWrong} 題。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
@@ -1089,6 +1100,7 @@ function finishZhuyinGame() {
     }
     zhuyinWinEl.classList.add('show');
     playWinSound();
+    submitScore('zhuyin', zhuyinScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
     speakText(`完成二十關！你總共得到 ${zhuyinScore} 分，答對 ${zhuyinCorrect} 題，答錯 ${zhuyinWrong} 題。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
@@ -1327,6 +1339,7 @@ function endWhackGame() {
     }
     whackWinEl.classList.add('show');
     playWinSound();
+    submitScore('whack', whackScore, currentPlayer || { name: currentPlayerName, age: '', school: '' });
     speakText(`時間到！你總共得到 ${whackScore} 分，打對 ${whackCorrect} 隻，打錯 ${whackWrong} 隻。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {
