@@ -22,8 +22,8 @@ function initAudio() {
 function updateSoundButtons() {
     const label = soundEnabled ? '🔊 音效: 開' : '🔇 音效: 關';
     ['sound-toggle-btn-lobby', 'sound-toggle-btn-paint', 'sound-toggle-btn-memory',
-     'sound-toggle-btn-guess', 'sound-toggle-btn-mult', 'sound-toggle-btn-calc',
-     'sound-toggle-btn-zhuyin'].forEach(id => {
+ 'sound-toggle-btn-guess', 'sound-toggle-btn-mult', 'sound-toggle-btn-calc',
+ 'sound-toggle-btn-zhuyin', 'sound-toggle-btn-whack'].forEach(id => {
         const btn = document.getElementById(id);
         if (btn) btn.innerText = label;
     });
@@ -42,7 +42,8 @@ const GAME_INTROS = {
     guess: '歡迎來到猜數字！我想了一個一到一百之間的整數。你每次輸入一個數字，我會告訴你太大還是太小，直到你猜中為止。看看你總共需要猜幾次！',
     mult: '歡迎來到九九乘法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的乘積，看看你最後能得到幾分！',
     calc: '歡迎來到加減法挑戰！總共有五十關，每一題答對得兩分，答錯倒扣兩分。選出正確的答案，看看你最後能得到幾分！',
-    zhuyin: '歡迎來到注音與圖片配對！總共有二十關。我會顯示一張圖片，請從四個注音選項中選出正確的注音。每題答對得五分，答錯不扣分，看看你能得到幾分！'
+    zhuyin: '歡迎來到注音與圖片配對！總共有二十關。我會顯示一張圖片，請從四個注音選項中選出正確的注音。每題答對得五分，答錯不扣分，看看你能得到幾分！',
+    whack: '歡迎來到注音打地鼠！總共有六十秒的時間。上方會顯示目標注音，我會唸出來，請從九個地洞中，打正確注音的地鼠。打對得五分，打錯扣三分。時間到看看你能得幾分！'
 };
 
 function speakText(text, interrupt = true) {
@@ -176,9 +177,10 @@ const guessView = document.getElementById('guessView');
 const multView = document.getElementById('multView');
 const calcView = document.getElementById('calcView');
 const zhuyinView = document.getElementById('zhuyinView');
+const whackView = document.getElementById('whackView');
 const welcomeOverlay = document.getElementById('welcome-overlay');
 
-const ALL_VIEWS = [lobbyView, paintView, memoryView, guessView, multView, calcView, zhuyinView];
+const ALL_VIEWS = [lobbyView, paintView, memoryView, guessView, multView, calcView, zhuyinView, whackView];
 
 function hideAllViews() {
     ALL_VIEWS.forEach(v => v.classList.add('hidden'));
@@ -236,6 +238,13 @@ function launchGame(gameId) {
             resetZhuyinGame();
             setTimeout(() => speakGameIntro('zhuyin'), 300);
             break;
+        case 'whack':
+            whackView.classList.remove('hidden');
+            document.getElementById('whack-user-display').innerText = `${currentPlayerName} 的注音打地鼠`;
+            initAudio();
+            resetWhackGame();
+            setTimeout(() => speakGameIntro('whack'), 300);
+            break;
     }
 }
 
@@ -245,6 +254,8 @@ function goBackToLobby() {
     if (multLockTimer) { clearTimeout(multLockTimer); multLockTimer = null; }
     if (calcLockTimer) { clearTimeout(calcLockTimer); calcLockTimer = null; }
     if (zhuyinLockTimer) { clearTimeout(zhuyinLockTimer); zhuyinLockTimer = null; }
+    if (whackTimerInterval) { clearInterval(whackTimerInterval); whackTimerInterval = null; }
+    if (whackMoleTimer) { clearTimeout(whackMoleTimer); whackMoleTimer = null; }
     if (speechSynthesis) speechSynthesis.cancel();
     showLobby();
 }
@@ -267,6 +278,7 @@ function handleStart(e) {
     document.getElementById('mult-user-display').innerText = `${currentPlayerName} 的九九乘法`;
     document.getElementById('calc-user-display').innerText = `${currentPlayerName} 的加減法`;
     document.getElementById('zhuyin-user-display').innerText = `${currentPlayerName} 的注音與圖片配對`;
+    document.getElementById('whack-user-display').innerText = `${currentPlayerName} 的注音打地鼠`;
 
     speakText(`歡迎 ${currentPlayerName} 來到遊戲樂園！請選擇想玩的遊戲。`);
 }
@@ -1082,6 +1094,275 @@ function finishZhuyinGame() {
     setTimeout(() => {
         confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
     }, 300);
+}
+
+/* ============================================================
+ * 注音打地鼠邏輯
+ * ============================================================ */
+const WHACK_TIME_LIMIT = 60 * 1000;   // 60 秒
+const WHACK_POINTS_CORRECT = 5;
+const WHACK_POINTS_WRONG = 3;         // 打錯扣分
+const WHACK_HOLE_COUNT = 9;
+const WHACK_MOLE_INTERVAL = 800;      // 每 0.8 秒冒出一隻新地鼠
+const WHACK_MOLE_DURATION = 1500;     // 地鼠停留 1.5 秒
+
+// 注音符號池（只用單一符號，方便打地鼠辨識）
+const WHACK_SYMBOLS = [
+    'ㄅ', 'ㄆ', 'ㄇ', 'ㄈ', 'ㄉ', 'ㄊ', 'ㄋ', 'ㄌ',
+    'ㄍ', 'ㄎ', 'ㄏ', 'ㄐ', 'ㄑ', 'ㄒ', 'ㄓ', 'ㄔ',
+    'ㄕ', 'ㄖ', 'ㄗ', 'ㄘ', 'ㄙ', 'ㄧ', 'ㄨ', 'ㄩ',
+    'ㄚ', 'ㄛ', 'ㄜ', 'ㄝ', 'ㄞ', 'ㄟ', 'ㄠ', 'ㄡ',
+    'ㄢ', 'ㄣ', 'ㄤ', 'ㄥ', 'ㄦ'
+];
+
+let whackScore = 0;
+let whackCorrect = 0;
+let whackWrong = 0;
+let whackTarget = 'ㄅ';
+let whackPlaying = false;
+let whackEndTime = 0;
+let whackTimerInterval = null;
+let whackMoleTimer = null;
+let whackHoles = [];          // 每個洞的 DOM 與狀態
+let whackActiveMoles = [];    // { holeIndex, symbol, timeoutId }
+
+const whackBoardEl = document.getElementById('whackBoard');
+const whackTimerEl = document.getElementById('whackTimer');
+const whackScoreEl = document.getElementById('whackScore');
+const whackCorrectEl = document.getElementById('whackCorrect');
+const whackWrongEl = document.getElementById('whackWrong');
+const whackTargetEl = document.getElementById('whackTarget');
+const whackWinEl = document.getElementById('whackWin');
+const whackWinTitle = document.getElementById('whackWinTitle');
+const whackWinText = document.getElementById('whackWinText');
+
+function buildWhackBoard() {
+    whackBoardEl.innerHTML = '';
+    whackHoles = [];
+    for (let i = 0; i < WHACK_HOLE_COUNT; i++) {
+        const hole = document.createElement('div');
+        hole.className = 'whack-hole';
+
+        const mole = document.createElement('div');
+        mole.className = 'whack-mole';
+        mole.dataset.holeIndex = i;
+        mole.textContent = '';
+
+        mole.addEventListener('click', () => handleWhackClick(i));
+
+        hole.appendChild(mole);
+        whackBoardEl.appendChild(hole);
+
+        whackHoles.push({ holeEl: hole, moleEl: mole, symbol: '', active: false });
+    }
+}
+
+function pickNewWhackTarget() {
+    const prev = whackTarget;
+    let next = prev;
+    while (next === prev && WHACK_SYMBOLS.length > 1) {
+        next = WHACK_SYMBOLS[Math.floor(Math.random() * WHACK_SYMBOLS.length)];
+    }
+    whackTarget = next;
+    whackTargetEl.textContent = whackTarget;
+    speakWhackTarget();
+}
+
+function speakWhackTarget() {
+    // 用語音唸出目標注音；注音符號語音不一定準，用「注音 X」提示
+    speakText(`請打注音 ${whackTarget}`, false);
+}
+
+function replayWhackTarget() {
+    if (!whackPlaying) return;
+    speakWhackTarget();
+}
+
+function spawnWhackMole() {
+    if (!whackPlaying) return;
+
+    // 找一個目前沒有地鼠的洞
+    const freeIndexes = whackHoles
+        .map((h, i) => (h.active ? -1 : i))
+        .filter(i => i >= 0);
+    if (freeIndexes.length === 0) return;
+
+    const holeIndex = freeIndexes[Math.floor(Math.random() * freeIndexes.length)];
+
+    // 70% 機率放目標注音，30% 放干擾注音
+    let symbol;
+    if (Math.random() < 0.7) {
+        symbol = whackTarget;
+    } else {
+        let fake = whackTarget;
+        while (fake === whackTarget) {
+            fake = WHACK_SYMBOLS[Math.floor(Math.random() * WHACK_SYMBOLS.length)];
+        }
+        symbol = fake;
+    }
+
+    const hole = whackHoles[holeIndex];
+    hole.symbol = symbol;
+    hole.active = true;
+    hole.moleEl.textContent = symbol;
+    hole.moleEl.classList.remove('hit-correct', 'hit-wrong');
+    // 強制 reflow 讓動畫重跑
+    void hole.moleEl.offsetWidth;
+    hole.moleEl.classList.add('up');
+
+    // 時間到自動收回去
+    const timeoutId = setTimeout(() => {
+        if (!hole.active) return;
+        hole.active = false;
+        hole.moleEl.classList.remove('up');
+        const idx = whackActiveMoles.findIndex(m => m.holeIndex === holeIndex);
+        if (idx >= 0) whackActiveMoles.splice(idx, 1);
+    }, WHACK_MOLE_DURATION);
+
+    whackActiveMoles.push({ holeIndex, symbol, timeoutId });
+}
+
+function handleWhackClick(holeIndex) {
+    if (!whackPlaying) return;
+    const hole = whackHoles[holeIndex];
+    if (!hole.active) return;
+
+    // 標記為已打
+    hole.active = false;
+    const idx = whackActiveMoles.findIndex(m => m.holeIndex === holeIndex);
+    if (idx >= 0) {
+        clearTimeout(whackActiveMoles[idx].timeoutId);
+        whackActiveMoles.splice(idx, 1);
+    }
+
+    const isCorrect = hole.symbol === whackTarget;
+
+    if (isCorrect) {
+        hole.moleEl.classList.add('hit-correct');
+        whackCorrect++;
+        whackCorrectEl.innerText = whackCorrect;
+        whackScore += WHACK_POINTS_CORRECT;
+        whackScoreEl.innerText = whackScore;
+        playMatchSound();
+        speakText('答對了！', false);
+    } else {
+        hole.moleEl.classList.add('hit-wrong');
+        whackWrong++;
+        whackWrongEl.innerText = whackWrong;
+        whackScore = Math.max(0, whackScore - WHACK_POINTS_WRONG);
+        whackScoreEl.innerText = whackScore;
+        playWrongSound();
+        speakText('答錯了！', false);
+    }
+
+    // 動畫結束後收回
+    setTimeout(() => {
+        hole.moleEl.classList.remove('up', 'hit-correct', 'hit-wrong');
+    }, 300);
+}
+
+function startWhackTimer() {
+    stopWhackTimer();
+    whackEndTime = Date.now() + WHACK_TIME_LIMIT;
+    whackTimerEl.innerText = '60';
+    whackTimerInterval = setInterval(() => {
+        const remaining = Math.max(0, Math.ceil((whackEndTime - Date.now()) / 1000));
+        whackTimerEl.innerText = remaining;
+        if (remaining <= 10) {
+            whackTimerEl.style.color = '#d32f2f';
+        } else {
+            whackTimerEl.style.color = '';
+        }
+        if (remaining <= 0) {
+            stopWhackTimer();
+            endWhackGame();
+        }
+    }, 200);
+}
+
+function stopWhackTimer() {
+    if (whackTimerInterval) {
+        clearInterval(whackTimerInterval);
+        whackTimerInterval = null;
+    }
+}
+
+function startWhackMoleLoop() {
+    stopWhackMoleLoop();
+    spawnWhackMole();
+    whackMoleTimer = setInterval(spawnWhackMole, WHACK_MOLE_INTERVAL);
+}
+
+function stopWhackMoleLoop() {
+    if (whackMoleTimer) {
+        clearInterval(whackMoleTimer);
+        whackMoleTimer = null;
+    }
+    // 清掉所有地鼠
+    whackHoles.forEach(h => {
+        h.active = false;
+        h.symbol = '';
+        h.moleEl.classList.remove('up', 'hit-correct', 'hit-wrong');
+    });
+    whackActiveMoles.forEach(m => clearTimeout(m.timeoutId));
+    whackActiveMoles = [];
+}
+
+function endWhackGame() {
+    whackPlaying = false;
+    stopWhackTimer();
+    stopWhackMoleLoop();
+
+    whackWinTitle.textContent = `🏆 時間到！總得分：${whackScore} 分`;
+    whackWinText.innerHTML = `打對 ${whackCorrect} 隻，打錯 ${whackWrong} 隻。<br>
+        打對 +${WHACK_POINTS_CORRECT} 分，打錯 -${WHACK_POINTS_WRONG} 分。`;
+    if (whackScore >= 100) {
+        whackWinText.innerHTML += '<br>🌟 太神了！你是注音打地鼠高手！';
+    } else if (whackScore >= 60) {
+        whackWinText.innerHTML += '<br>💪 表現很棒，繼續加油！';
+    } else if (whackScore >= 30) {
+        whackWinText.innerHTML += '<br>👍 不錯喔，再練習會更厲害！';
+    } else {
+        whackWinText.innerHTML += '<br>😊 別灰心，多練習幾次一定可以的！';
+    }
+    whackWinEl.classList.add('show');
+    playWinSound();
+    speakText(`時間到！你總共得到 ${whackScore} 分，打對 ${whackCorrect} 隻，打錯 ${whackWrong} 隻。`);
+    confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+    setTimeout(() => {
+        confetti({ particleCount: 80, spread: 120, origin: { y: 0.4 } });
+    }, 300);
+}
+
+function resetWhackGame() {
+    stopWhackTimer();
+    stopWhackMoleLoop();
+    whackScore = 0;
+    whackCorrect = 0;
+    whackWrong = 0;
+    whackPlaying = false;
+    whackScoreEl.innerText = '0';
+    whackCorrectEl.innerText = '0';
+    whackWrongEl.innerText = '0';
+    whackTimerEl.innerText = '60';
+    whackTimerEl.style.color = '';
+    whackWinEl.classList.remove('show');
+
+    buildWhackBoard();
+
+    // 初始目標
+    whackTarget = WHACK_SYMBOLS[Math.floor(Math.random() * WHACK_SYMBOLS.length)];
+    whackTargetEl.textContent = whackTarget;
+
+    // 小延遲後開始，讓語音先唸完再冒地鼠
+    whackPlaying = true;
+    startWhackTimer();
+    setTimeout(() => {
+        if (whackPlaying) {
+            speakWhackTarget();
+            startWhackMoleLoop();
+        }
+    }, 600);
 }
 
 // ========== 初始化 ==========

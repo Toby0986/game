@@ -74,6 +74,14 @@
                         </div>
                         <div class="play-badge">開始玩</div>
                     </div>
+                    <div class="game-card" onclick="launchGame('whack')">
+                    <div class="game-icon">🔨</div>
+                    <div class="game-info">
+                        <h3>注音打地鼠</h3>
+                        <p>聽語音找注音，60 秒內打對最多隻地鼠！</p>
+                    </div>
+                    <div class="play-badge">開始玩</div>
+                </div>
                 </div>
             </div>
         </div>
@@ -270,6 +278,42 @@
             </div>
         </div>
 
+        <!-- ========== 注音打地鼠視圖 ========== -->
+<div id="whackView" class="game-app whack-app hidden">
+    <div class="game-header whack-header">
+        <div class="header-title">
+            <span>🔨</span> <span id="whack-user-display">注音打地鼠</span>
+        </div>
+        <div class="game-header-actions">
+            <button class="speak-btn" onclick="speakGameIntro('whack')">🔊 玩法</button>
+            <button class="back-btn" onclick="goBackToLobby()">⬅ 大廳</button>
+            <button class="sound-btn" id="sound-toggle-btn-whack" onclick="toggleSound()">🔊 音效: 開</button>
+        </div>
+    </div>
+    <div class="whack-content">
+        <div class="whack-score">
+            <span>⏱️ <span id="whackTimer">60</span> 秒</span>
+            <span>得分：<span id="whackScore">0</span></span>
+            <span>打對：<span id="whackCorrect">0</span></span>
+            <span>打錯：<span id="whackWrong">0</span></span>
+        </div>
+        <div class="whack-target-bar">
+            聽一聽，打「<span id="whackTarget">ㄅ</span>」
+            <button class="whack-replay-btn" onclick="replayWhackTarget()">🔊 再聽一次</button>
+        </div>
+        <div class="whack-board" id="whackBoard"></div>
+        <div class="whack-win" id="whackWin">
+            <div class="big-emoji">🏆</div>
+            <h3 id="whackWinTitle">時間到！</h3>
+            <p id="whackWinText"></p>
+            <button onclick="resetWhackGame()">再玩一次</button>
+        </div>
+        <div class="whack-actions">
+            <button class="action-btn reset" onclick="resetWhackGame()">🔄 重新開始</button>
+        </div>
+    </div>
+</div>
+
         <!-- ========== 進入遮罩 ========== -->
         <div id="welcome-overlay" class="welcome-overlay">
             <div class="welcome-card">
@@ -280,6 +324,8 @@
             </div>
         </div>
     </div>
+
+    
 
     <script src="script.js"></script>
 </body>
