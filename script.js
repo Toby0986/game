@@ -471,6 +471,7 @@ function winMemoryGame() {
     // 基礎 100 分 + 時間加分（越快越高）
     const memoryResult = submitTimedScore('memory', 100, elapsed, getScoringPlayer());
     memoryWinEl.innerHTML = `🎉 全部配對成功！你太厲害了！<br>${formatTimeSummary(memoryResult)}`;
+    showSubmitStatus(memoryWinEl, 'memory', memoryResult);
     memoryWinEl.classList.add('show');
     playMatchSound();
     speakText(`恭喜你！全部配對成功！用了 ${Math.round(memoryResult.timeMs / 1000)} 秒，總分 ${memoryResult.score} 分！`);
@@ -578,6 +579,7 @@ function submitGuess() {
         guessTip.style.display = 'none';
         guessResultTitle.textContent = `🎉 太厲害了！答案是 ${guessTarget}`;
         guessResultText.innerHTML = `你總共猜了 ${guessAttempts} 次就答對了！<br>${formatTimeSummary(guessResultData)}`;
+        showSubmitStatus(guessResultText, 'guess', guessResultData);
         guessResult.classList.add('show');
         speakText(`太厲害了！答案是 ${guessTarget}，你總共猜了 ${guessAttempts} 次就答對了！用了 ${Math.round(guessResultData.timeMs / 1000)} 秒，總分 ${guessResultData.score} 分！`);
         confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
@@ -744,6 +746,7 @@ function finishMultGame() {
         multWinText.innerHTML += '<br>😊 別灰心，多練習幾次一定可以的！';
     }
     multWinEl.classList.add('show');
+    showSubmitStatus(multWinText, 'mult', multResult);
     playWinSound();
     speakText(`完成五十關！答對 ${multCorrect} 題，答錯 ${multWrong} 題，用時 ${Math.round(multResult.timeMs / 1000)} 秒，總分 ${multResult.score} 分。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
@@ -911,6 +914,7 @@ function finishCalcGame() {
         calcWinText.innerHTML += '<br>😊 別灰心，多練習幾次一定可以的！';
     }
     calcWinEl.classList.add('show');
+    showSubmitStatus(calcWinText, 'calc', calcResult);
     playWinSound();
     speakText(`完成五十關！答對 ${calcCorrect} 題，答錯 ${calcWrong} 題，用時 ${Math.round(calcResult.timeMs / 1000)} 秒，總分 ${calcResult.score} 分。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
@@ -1097,6 +1101,7 @@ function finishZhuyinGame() {
         zhuyinWinText.innerHTML += '<br>😊 別灰心，多練習幾次一定可以的！';
     }
     zhuyinWinEl.classList.add('show');
+    showSubmitStatus(zhuyinWinText, 'zhuyin', zhuyinResult);
     playWinSound();
     speakText(`完成二十關！答對 ${zhuyinCorrect} 題，答錯 ${zhuyinWrong} 題，用時 ${Math.round(zhuyinResult.timeMs / 1000)} 秒，總分 ${zhuyinResult.score} 分。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
@@ -1336,7 +1341,8 @@ function endWhackGame() {
     }
     whackWinEl.classList.add('show');
     playWinSound();
-    submitScore('whack', whackScore, getScoringPlayer());
+    const whackResult = submitTimedScore('whack', whackScore, 0, getScoringPlayer());   // 打地鼠不計時間加分
+    showSubmitStatus(whackWinText, 'whack', whackResult);
     speakText(`時間到！你總共得到 ${whackScore} 分，打對 ${whackCorrect} 隻，打錯 ${whackWrong} 隻。`);
     confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
     setTimeout(() => {

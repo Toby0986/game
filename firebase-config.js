@@ -22,10 +22,20 @@ let firestoreDb = null;
 
 const FIREBASE_READY = (function () {
     try {
-        if (typeof firebase === 'undefined') return false;
+        if (typeof firebase === 'undefined') {
+            console.warn('Firebase SDK 沒有載入成功，排行榜改用本機儲存');
+            return false;
+        }
         if (!firebaseConfig.apiKey || firebaseConfig.apiKey.indexOf('YOUR_') === 0) return false;
         firebase.initializeApp(firebaseConfig);
         firestoreDb = firebase.firestore();
+        // 手機的 App 內建瀏覽器（LINE、FB 等）常擋住 Firestore 的預設連線方式，
+        // 開啟自動偵測後，連不上時會改用長輪詢（long polling）
+        try {
+            firestoreDb.settings({ experimentalAutoDetectLongPolling: true });
+        } catch (e) {
+            console.warn('Firestore 連線設定失敗', e);
+        }
         return true;
     } catch (e) {
         console.error('Firebase 初始化失敗，改用本機排行榜', e);

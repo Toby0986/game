@@ -82,10 +82,14 @@ function computeTimedResult(gameId, baseScore, elapsedMs) {
     return { score: base + bonus, baseScore: base, bonus, timeMs };
 }
 
-/** 計算時間加分並提交分數，回傳計算結果（可用來顯示在過關畫面） */
+/**
+ * 計算時間加分並提交分數，回傳計算結果（可用來顯示在過關畫面）。
+ * 回傳物件另外附帶：submitted（送出中的 Promise）、retry（重新送出）。
+ */
 function submitTimedScore(gameId, baseScore, elapsedMs, player) {
     const r = computeTimedResult(gameId, baseScore, elapsedMs);
-    submitScore(gameId, r.score, player, '', { baseScore: r.baseScore, timeMs: r.timeMs });
+    r.retry = () => submitScore(gameId, r.score, player, '', { baseScore: r.baseScore, timeMs: r.timeMs });
+    r.submitted = r.retry();
     return r;
 }
 
@@ -178,33 +182,95 @@ function submitScoreLocal(gameId, score, player, mode, extra) {
 }
 
 // ---------- 提交分數 ----------
+const SUBMIT_RETRY_DELAY_MS = 1500;
+// 網路不穩時值得再試一次的錯誤；permission-denied（規則擋下）重試也沒用
+const RETRYABLE_CODES = ['unavailable', 'deadline-exceeded', 'aborted', 'failed-precondition', 'cancelled', 'internal'];
+
 /**
  * @param {string} gameId 遊戲代號
  * @param {number} score 總分（已含時間加分）
  * @param {object} player 玩家資料（name, age, school, city, showInfo ...）
  * @param {string} mode 模式/難度標籤（可選）
  * @param {object} extra { baseScore, timeMs }（可選）
- * 每位玩家每個遊戲只保留最好的一次。永遠不會丟出錯誤（失敗只記在 console）。
+ * 每位玩家每個遊戲只保留最好的一次。不會丟出錯誤，結果以物件回傳：
+ *   { ok: true,  cloud: true/false, saved: true/false }
+ *   { ok: false, cloud: true, code: '失敗原因' }
  */
 async function submitScore(gameId, score, player, mode = '', extra = {}) {
-    try {
-        if (!useCloudLeaderboard()) {
-            return submitScoreLocal(gameId, score, player, mode, extra);
+    if (!useCloudLeaderboard()) {
+        try {
+            submitScoreLocal(gameId, score, player, mode, extra);
+            return { ok: true, cloud: false, saved: true };
+        } catch (e) {
+            console.error('本機儲存分數失敗', e);
+            return { ok: false, cloud: false, code: 'local-error' };
         }
-        const data = buildEntryData(player, score, mode, extra);
-        data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-        const ref = cloudEntriesRef(gameId).doc(data.playerId);
-
-        await firestoreDb.runTransaction(async (tx) => {
-            const snap = await tx.get(ref);
-            if (snap.exists && entryRankKey(snap.data()) >= data.rankKey) return; // 沒有破自己的紀錄
-            tx.set(ref, data);
-        });
-        return true;
-    } catch (e) {
-        console.error('提交分數失敗', e);
-        return false;
     }
+
+    const data = buildEntryData(player, score, mode, extra);
+    const ref = cloudEntriesRef(gameId).doc(data.playerId);
+    let lastErr = null;
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+            let saved = false;
+            await firestoreDb.runTransaction(async (tx) => {
+                saved = false;
+                const snap = await tx.get(ref);
+                if (snap.exists && entryRankKey(snap.data()) >= data.rankKey) return; // 沒有破自己的紀錄
+                tx.set(ref, data);
+                saved = true;
+            });
+            return { ok: true, cloud: true, saved };
+        } catch (e) {
+            lastErr = e;
+            console.error(`提交分數失敗（第 ${attempt + 1} 次）`, e);
+            if (!RETRYABLE_CODES.includes(e && e.code)) break;
+            if (attempt < 2) await new Promise(r => setTimeout(r, SUBMIT_RETRY_DELAY_MS));
+        }
+    }
+    return { ok: false, cloud: true, code: (lastErr && (lastErr.code || lastErr.message)) || 'unknown' };
+}
+
+/**
+ * 在過關畫面顯示「成績有沒有記錄到排行榜」，失敗時顯示原因與「重新送出」按鈕。
+ * @param {HTMLElement} container 要把狀態文字加進去的元素
+ * @param {string} gameId 遊戲代號
+ * @param {object} result submitTimedScore() 的回傳值
+ */
+function showSubmitStatus(container, gameId, result) {
+    if (!container || !result || !result.submitted) return;
+    const box = document.createElement('div');
+    box.className = 'lb-submit-status';
+    box.style.cssText = 'margin-top:10px;font-size:14px;line-height:1.6;';
+    container.appendChild(box);
+
+    const run = async (promise) => {
+        box.textContent = '⏳ 正在記錄到排行榜…';
+        let res;
+        try { res = await promise; } catch (e) { res = { ok: false, code: 'error' }; }
+
+        if (res.ok) {
+            if (!res.cloud) {
+                box.textContent = '📱 已記錄在這台裝置（目前沒有連上雲端排行榜，其他人看不到）';
+                return;
+            }
+            const rank = await getPlayerRank(gameId, getScoringPlayer());
+            box.textContent = rank > 0
+                ? `✅ 已記錄到排行榜，目前第 ${rank} 名`
+                : `✅ 成績已送出（未進入前 ${LEADERBOARD_MAX_ENTRIES} 名）`;
+            return;
+        }
+
+        box.textContent = `⚠️ 成績沒有記錄到排行榜（${res.code}）`;
+        const btn = document.createElement('button');
+        btn.textContent = '重新送出';
+        btn.style.cssText = 'margin-left:8px;padding:4px 12px;border-radius:12px;border:2px solid #d84315;background:#fff;color:#d84315;font-weight:bold;cursor:pointer;';
+        btn.onclick = () => { run(result.retry()); };
+        box.appendChild(btn);
+    };
+    run(result.submitted);
 }
 
 // ---------- 讀取排行榜 ----------
